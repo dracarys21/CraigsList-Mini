@@ -13,8 +13,9 @@ Dotnet final project. Creating our own flavor of [Craigslist](https://accounts.c
 All documentation can be found in the `docs/` directory.
 
 1. [Model Design](docs/Models.md)
-2. [Tests](docs/Tests.md)
+2. [Business Logic](docs/BusinessLogic.md)
 3. [Requirements](docs/Requirements.md)
+4. [General Assumptions](docs/Assumptions.md)
 
 ## Citations
 
