@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace TestProject
 {
-    class PostMessageTests
+    [TestClass]
+    public class PostMessageTests
     {
         int messageCount = 5;
 
@@ -39,10 +40,97 @@ namespace TestProject
         public void CreateTestSuccessfull()
         {
             var post = GetPostWithMessages();
+
+            foreach (var m in post.Messages)
+            {
+                Assert.IsTrue(MessageAction.CanCreateMessage(m, m.CreatedBy, post));
+            }
+        }
+
+        [TestMethod]
+        public void  RequiredMessageBody()
+        {
+            var post = GetPostWithMessages();
+            foreach (var m in post.Messages)
+            {
+                    m.Body = "";
+                    Assert.IsFalse(MessageAction.CanCreateMessage(m, m.CreatedBy, post));
+            }
+        }
+
+
+        [TestMethod]
+        public void RequiredSender()
+        {
+            var post = GetPostWithMessages();
+
+            int i = 0;
+            foreach (var m in post.Messages)
+            {
+                    Assert.IsFalse(MessageAction.CanCreateMessage(m, null, post));
+            }
+        }
+        [TestMethod]
+        public void RequiredReciever()
+        {
+            var post = GetPostWithMessages();
+            foreach (var m in post.Messages)
+            {
+                m.SendTo = null;
+                Assert.IsFalse(MessageAction.CanCreateMessage(m, m.CreatedBy, post));
+            }
+        }
+        [TestMethod]
+        public void CheckRecieverIsAuthor()
+        {
+            var post = GetPostWithMessages();
+            foreach (var m in post.Messages)
+           {
+                    m.SendTo = new ApplicationUser {Id = "555" };
+                    Assert.IsFalse(MessageAction.CanCreateMessage(m, m.CreatedBy, post));
+           }
+        }
+
+
+        [TestMethod]
+        public void CheckPostForMessages()
+        {
+            var post = GetPostWithMessages();
+            var newpost = UserPostTests.GetDummyPost();
+            newpost.Id = 2;
+            foreach (var m in post.Messages)
+            {
+                    m.Body = "";
+                    Assert.IsFalse(MessageAction.CanCreateMessage(m, m.CreatedBy, newpost));
+            }
+        }
+
+        [TestMethod]
+        public void NotSenderMessageDelete()
+        {
+            var post = GetPostWithMessages();
+            foreach (var m in post.Messages)
+            {
+                Assert.IsFalse(MessageAction.CanDeleteMessage(m, m.CreatedBy, post));
+            }
+        }
+
+        [TestMethod]
+        public void RequiredUserToDelete()
+        {
+            var post = GetPostWithMessages(); 
+            foreach (var m in post.Messages)
+            {
+                    Assert.IsFalse(MessageAction.CanDeleteMessage(m, null, post));
+            }
+        }
+        [TestMethod]
+        public void RequiredMessageToDelete()
+        {
+            var post = GetPostWithMessages();
+            Assert.IsFalse(MessageAction.CanDeleteMessage(null, post.Author, post));
             
-            foreach( var m in post.Messages)
-                Assert.IsTrue(MessageAction.CanCreateMessage(m, m.CreatedBy ,post));
         }
 
     }
-}
+ }

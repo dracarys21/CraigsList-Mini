@@ -32,7 +32,8 @@ namespace DB.Database
               
                     };
 
-                    Post.Author.Inbox.Messages.Add(message);
+                    
+  
                     Post.Messages.Add(message);
                     db.Message.Add(message);
                     db.SaveChanges();
@@ -51,7 +52,9 @@ namespace DB.Database
             try
             {
                 List<Message> Messages = new List<Message>();
-                foreach (var post in User.Posts)
+                UserPost p = new UserPost();
+                List<Post> posts = p.GetPostsByUser(User);
+                foreach (var post in posts)
                 {
                     foreach (var message in post.Messages)
                     {
