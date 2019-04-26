@@ -26,7 +26,7 @@ namespace Data.Models.Data
         public DateTime ExpirationDate { get; set; }
 
         [Required]
-        public ApplicationUser CreatedBy { get; set; }
+        public ApplicationUser Author { get; set; }
 
         [Required]
         public ApplicationUser LastModifiedBy { get; set; }

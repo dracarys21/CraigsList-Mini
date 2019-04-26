@@ -76,7 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Database\ApplicationDbContext.cs" />
-    <Compile Include="Database\PostData.cs" />
+    <Compile Include="Database\PostAction.cs" />
+    <Compile Include="Database\UserPost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
