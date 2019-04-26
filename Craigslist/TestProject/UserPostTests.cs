@@ -9,7 +9,7 @@ namespace TestProject
     [TestClass]
     public class UserPostTests
     {
-        private Post GetDummyPost()
+        internal static Post GetDummyPost()
         {
             return new Post
             {

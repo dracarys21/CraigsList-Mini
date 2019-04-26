@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Models.Data;
 using Microsoft.AspNet.Identity;
@@ -10,6 +11,7 @@ namespace Models
     public class ApplicationUser : IdentityUser
     {
         public Inbox Inbox { get; set; }
+        public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
