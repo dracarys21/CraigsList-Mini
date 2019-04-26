@@ -90,7 +90,7 @@ namespace DB.Database
             try
             {
                 errors = new StringBuilder();
-                if (!MessageAction.CanDeleteMessage(message, user, post))
+                if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
                 {
                     errors.Append("Post ");
                     return;
@@ -103,6 +103,26 @@ namespace DB.Database
                 throw;
             }
 
-        } 
+        }
+
+        public void ReadResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        {
+            try
+            {
+                errors = new StringBuilder();
+                if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
+                {
+                    errors.Append("Post ");
+                    return;
+                }
+                message.Read = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        }
     }
 }

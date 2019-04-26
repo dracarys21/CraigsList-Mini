@@ -18,7 +18,7 @@ namespace BizLogic.Logic
             return isMessageEmpty && sendToFlag && createdByFlag;
         }
 
-        public static bool CanDeleteMessage(Message message, ApplicationUser user,  Post post)
+        public static bool CanUpdateMessageDatabase(Message message, ApplicationUser user,  Post post)
         {
             return message!=null && message.SendTo.Equals(user) && message.SendTo.Equals(post.Author);
         }

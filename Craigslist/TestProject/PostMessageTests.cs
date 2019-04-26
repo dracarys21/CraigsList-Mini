@@ -111,7 +111,7 @@ namespace TestProject
             var post = GetPostWithMessages();
             foreach (var m in post.Messages)
             {
-                Assert.IsFalse(MessageAction.CanDeleteMessage(m, m.CreatedBy, post));
+                Assert.IsFalse(MessageAction.CanUpdateMessageDatabase(m, m.CreatedBy, post));
             }
         }
 
@@ -121,14 +121,14 @@ namespace TestProject
             var post = GetPostWithMessages(); 
             foreach (var m in post.Messages)
             {
-                    Assert.IsFalse(MessageAction.CanDeleteMessage(m, null, post));
+                    Assert.IsFalse(MessageAction.CanUpdateMessageDatabase(m, null, post));
             }
         }
         [TestMethod]
         public void RequiredMessageToDelete()
         {
             var post = GetPostWithMessages();
-            Assert.IsFalse(MessageAction.CanDeleteMessage(null, post.Author, post));
+            Assert.IsFalse(MessageAction.CanUpdateMessageDatabase(null, post.Author, post));
             
         }
 
