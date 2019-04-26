@@ -23,19 +23,17 @@ namespace Data.Models.Data
         [Required]
         public DateTime LastModifiedDate { get; set; }
 
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; }
 
-        [Required]
         public ApplicationUser Author { get; set; }
 
-        [Required]
         public ApplicationUser LastModifiedBy { get; set; }
 
-//        [Required]
-//        public LocationModel Location { get; set; }
-//
-//        [Required]
-//        public PostTypeModel PostType { get; set; }
+        [Required]
+        public Location Location { get; set; }
+
+        [Required]
+        public PostType PostType { get; set; }
 
         [Required]
         public bool Deleted { get; set; }
