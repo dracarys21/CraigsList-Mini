@@ -25,6 +25,8 @@ namespace BizLogic.Logic
         public static bool IsValidSlug(string slugString)
         {
             Regex regex = new Regex(@"^[a-z\d](?:[a-z\d_-]*[a-z\d])?$");
+            if (slugString == null)
+                return false;
             return regex.IsMatch(slugString);
         }
     }
