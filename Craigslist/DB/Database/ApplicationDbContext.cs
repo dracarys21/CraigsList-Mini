@@ -20,7 +20,7 @@ namespace DB.Database
 
         public DbSet<Post> Posts { get; set; }
 
-        public DbSet<Location> Location { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         public DbSet<PostType> PostType { get; set; }
     }
