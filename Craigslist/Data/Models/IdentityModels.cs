@@ -1,6 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Data.Models.Data;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -17,5 +18,4 @@ namespace Models
             return userIdentity;
         }
     }
-
 }

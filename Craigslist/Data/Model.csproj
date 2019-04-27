@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Data</RootNamespace>
-    <AssemblyName>Data</AssemblyName>
+    <AssemblyName>l</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -98,7 +98,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Example.cs" />
+    <Compile Include="Models\Data\Inbox.cs" />
+    <Compile Include="Models\Data\Message.cs" />
+    <Compile Include="Models\Data\PostType.cs" />
+    <Compile Include="Models\Data\Location.cs" />
+    <Compile Include="Models\Data\Post.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

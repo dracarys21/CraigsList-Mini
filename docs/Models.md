@@ -54,7 +54,13 @@ Keeps track of converstations per post
 
 | Field | Data Type | Nullable? | Default Values | Notes
 | ---|---|---clear, any alphanumeric characters including hyphen. We may want to extend validation to ensure that both the start and end of the slug is a letter and maybe limit the length to 32 characters.
-| Active | bool | No | false | Indicates whether or not we should display this Post Type
+| Id | int | No | system generated | PK |
+| Category | string | No | | Examples: Housing, Jobs, etc
+| SubCategory | string | No | | Examples: Apartment, offices, etc
+| Slug | string | No | | this should be limited in length and values. I'm thinking '^[a-zA-Z0-9-]+$'. <br>So be clear, any alphanumeric characters including hyphen. We may want to extend validation to ensure that both the start and end of the slug is a letter and maybe limit the length to 32 characters.
+| Active | bool | No | false | Indicates whether or not we should display this location
+
+
 
 ## Comments/Notes/Questions
 

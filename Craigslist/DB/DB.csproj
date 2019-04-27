@@ -75,7 +75,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\Db1.cs" />
+    <Compile Include="Database\ApplicationDbContext.cs" />
+    <Compile Include="Database\PostFilter.cs" />
+    <Compile Include="Database\PostMessages.cs" />
+    <Compile Include="Database\UserPost.cs" />
+    <Compile Include="Migrations\201904261054240_Initial Commit.cs" />
+    <Compile Include="Migrations\201904261054240_Initial Commit.Designer.cs">
+      <DependentUpon>201904261054240_Initial Commit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +100,10 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201904261054240_Initial Commit.resx">
+      <DependentUpon>201904261054240_Initial Commit.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
