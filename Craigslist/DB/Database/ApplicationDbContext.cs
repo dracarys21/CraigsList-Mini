@@ -26,6 +26,6 @@ namespace DB.Database
 
         public DbSet<Message> Message { get; set; }
 
-        public DbSet<Inbox> Inbox { get; set; }
+       // public DbSet<Inbox> Inbox { get; set; }
     }
 }
