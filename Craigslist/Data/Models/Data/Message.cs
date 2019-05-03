@@ -20,10 +20,10 @@ namespace Data.Models.Data
         [Required]
         public string Body { get; set; }
         [Required]
-        public virtual ApplicationUser SendTo { get; set; }
+        public ApplicationUser SendTo { get; set; }
         public DateTime CreateDate { get; set; }
         [Required]
-        public virtual ApplicationUser CreatedBy { get; set; }
+        public ApplicationUser CreatedBy { get; set; }
         public bool Deleted { get; set; }
         public bool Read { get; set; }
     }

@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/49302681/merging-3-regular-expressions-to-make-a-slug-url-validation-check

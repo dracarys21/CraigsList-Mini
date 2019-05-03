@@ -62,6 +62,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocationTests.cs" />
     <Compile Include="PostFilterTests.cs" />
     <Compile Include="PostMessageTests.cs" />
     <Compile Include="UserPostTests.cs" />

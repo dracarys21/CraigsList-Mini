@@ -98,7 +98,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Data\Inbox.cs" />
     <Compile Include="Models\Data\Message.cs" />
     <Compile Include="Models\Data\PostType.cs" />
     <Compile Include="Models\Data\Location.cs" />
