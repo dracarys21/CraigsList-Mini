@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BizLogic", "BizLogic\BizLog
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB", "DB\DB.csproj", "{B425DC24-7C23-4849-B13C-B0B9B01328F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{FE3618C0-1E2A-4273-86ED-3B293070D447}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B425DC24-7C23-4849-B13C-B0B9B01328F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B425DC24-7C23-4849-B13C-B0B9B01328F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B425DC24-7C23-4849-B13C-B0B9B01328F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE3618C0-1E2A-4273-86ED-3B293070D447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE3618C0-1E2A-4273-86ED-3B293070D447}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE3618C0-1E2A-4273-86ED-3B293070D447}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE3618C0-1E2A-4273-86ED-3B293070D447}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
