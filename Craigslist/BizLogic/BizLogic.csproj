@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logic\LocationActions.cs" />
+    <Compile Include="Logic\MessageAction.cs" />
     <Compile Include="Logic\PostActions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

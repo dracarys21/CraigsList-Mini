@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="LocationTests.cs" />
     <Compile Include="PostFilterTests.cs" />
+    <Compile Include="PostMessageTests.cs" />
     <Compile Include="UserPostTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Models;
 
@@ -38,6 +40,8 @@ namespace Data.Models.Data
         [Required]
         public bool Deleted { get; set; }
 
-//        public List<Message> Messages { get; set; }
+        //        public List<Message> Messages { get; set; }
+
+        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
     }
 }
