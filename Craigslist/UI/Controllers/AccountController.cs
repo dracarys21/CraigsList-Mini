@@ -5,7 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
+using DB.Database;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Models;
@@ -80,7 +83,14 @@ namespace UI.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    {
+                        Response.Cookies["Location"]["Area"] = "New York";
+                        Response.Cookies["Location"]["Locale"] = "Manhattan";
+                        string role = UserRoles.GetUserRole(model.Email);
+                        if (role == "Admin")
+                            return RedirectToAction("Index", "Admin");
+                        return RedirectToAction("Index","Posts");
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -152,12 +162,21 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
+                ApplicationDbContext context = new ApplicationDbContext();
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    if (!roleManager.RoleExists("Admin"))
+                    {
+                        roleManager.Create(new IdentityRole("Admin"));
+                        this.UserManager.AddToRole(user.Id, "Admin");
+                       // return RedirectToAction("","");
+                    }
+             
+        
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
