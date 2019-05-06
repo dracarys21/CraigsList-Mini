@@ -20,8 +20,10 @@ namespace DB.Database
                     var rolesId = from u in db.Users
                                 where u.UserName == userName
                                 select u.Roles;
-                    var roleId = rolesId.FirstOrDefault();
-                    var role = db.Roles.Find(roleId.FirstOrDefault().RoleId);
+                    var roleId = rolesId.FirstOrDefault().FirstOrDefault();
+                    if (roleId == null)
+                        return "";
+                    var role = db.Roles.Find(roleId.RoleId);
                     return role.Name;
 
                 }

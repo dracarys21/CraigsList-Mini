@@ -179,7 +179,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Route-Constraints\AdminRouteConstraint.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
