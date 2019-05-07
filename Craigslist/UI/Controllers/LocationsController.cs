@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
+using System.Text;
+using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
 {
@@ -22,6 +24,15 @@ namespace UI.Controllers
             return View(db.Locations.ToList());
         }
 
+
+        //Get: Locales
+        public ActionResult ListLocale(string area)
+        {
+             var locales = from loc in db.Locations
+                              where loc.Area == area
+                              select loc;
+            return View(locales.ToList());
+        }
         // GET: Locations/Details/5
         public ActionResult Details(int? id)
         {
@@ -33,7 +44,7 @@ namespace UI.Controllers
             if (location == null)
             {
                 return HttpNotFound();
-            }
+            } 
             return View(location);
         }
 
@@ -48,12 +59,11 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Area,Locale,Slug,Active")] Location location)
+        public ActionResult Create([Bind(Include = "Id,Area,Locale,Slug")] Location location)
         {
             if (ModelState.IsValid)
             {
-                db.Locations.Add(location);
-                db.SaveChanges();
+                LocationOps.CreateLocation(location.Area, location.Locale, location.Slug);
                 return RedirectToAction("Index");
             }
 
@@ -84,8 +94,8 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(location).State = EntityState.Modified;
-                db.SaveChanges();
+                string userid = User.Identity.GetUserId();
+                LocationOps.EditLocation(UserRoles.GetCurrentUser(userid),location, out StringBuilder errors);
                 return RedirectToAction("Index");
             }
             return View(location);
@@ -111,9 +121,8 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Location location = db.Locations.Find(id);
-            db.Locations.Remove(location);
-            db.SaveChanges();
+            string userid = User.Identity.GetUserId();
+            LocationOps.DeleteLocationById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
             return RedirectToAction("Index");
         }
 

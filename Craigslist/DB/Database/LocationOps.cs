@@ -7,12 +7,13 @@ using System.Text;
 using BizLogic.Logic;
 using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace DB.Database
 {
-    class LocationOps
+   public class LocationOps
     {
-        public void CreateLocation(string area, string locale, string slug)
+        public static void CreateLocation(string area, string locale, string slug)
         {
             try
             {
@@ -37,8 +38,8 @@ namespace DB.Database
             }
         }
 
-        public Location GetLocationById(int locationId)
-        {
+        public static Location GetLocationById(int locationId)
+        { 
             try
             {
                 using (var db = new ApplicationDbContext())
@@ -53,7 +54,25 @@ namespace DB.Database
             }
         }
 
-        public void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
+        public static IEnumerable<Location> GetLocalesByArea(string area)
+        {
+            try
+            {
+                using(var db =  new ApplicationDbContext())
+                {
+                    var locales = from loc in db.Locations
+                                  where loc.Area == area
+                                  select loc;
+                    return locales;
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        public static void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
@@ -68,7 +87,7 @@ namespace DB.Database
                         errors.Append("Location does not exist\n");
                         return;
                     }
-
+                    string roleId = UserRoles.GetAdminRoleId();
                     if (!LocationActions.CanCRUDLocation(user, location))
                     {
                         errors.Append("Location cannot be deleted");
@@ -86,12 +105,13 @@ namespace DB.Database
             }
         }
 
-        public void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
+                string roleId = UserRoles.GetAdminRoleId();
                 if (!LocationActions.CanCRUDLocation(user, location))
                 {
                     errors.Append("Location cannot be updated.");
@@ -122,7 +142,7 @@ namespace DB.Database
             }
         }
 
-        public void EditLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        public static void EditLocation(ApplicationUser user, Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();
 

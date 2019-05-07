@@ -91,8 +91,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(post).State = EntityState.Modified;
-                db.SaveChanges();
+                
                 return RedirectToAction("Index");
             }
             return View(post);

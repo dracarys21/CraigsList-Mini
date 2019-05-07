@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace DB.Database
 {
@@ -37,18 +38,91 @@ namespace DB.Database
 
         public static bool ChangeUserRole(String userName)
         {
-            using (var db = new ApplicationDbContext())
+            try
             {
-                var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
-                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
-
-                ApplicationUser user = db.Users.FirstOrDefault(x => x.UserName == userName);
-                if (user != null)
+                using (var db = new ApplicationDbContext())
                 {
-                    userManager.AddToRole(user.Id, "Admin");
+                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
+                    var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+
+                    ApplicationUser user = db.Users.FirstOrDefault(x => x.UserName == userName);
+                    if (user != null)
+                    {
+                        userManager.AddToRole(user.Id, "Admin");
+                        db.SaveChanges();
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+        }
+
+        public static bool CreateAdminRole()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
+                    var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+                    if (!roleManager.RoleExists("Admin"))
+                    {
+                        roleManager.Create(new IdentityRole("Admin"));
+                        db.SaveChanges();
+                        return false;
+                    }
                     return true;
                 }
-                return false;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static string GetAdminRoleId()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var AdminRoleId = from roles in db.Roles
+                                      where roles.Name == "Admin"
+                                      select roles.Id;
+                    return AdminRoleId.FirstOrDefault();
+                }
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static ApplicationUser GetCurrentUser(string id)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var users = from u in db.Users
+                                where u.Id.CompareTo(id) == 0
+                                select u;
+                    return users.FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
     }

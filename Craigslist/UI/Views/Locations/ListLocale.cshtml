@@ -1,10 +1,10 @@
-﻿@model IEnumerable<Data.Models.Data.PostType>
+﻿@model IEnumerable<Data.Models.Data.Location>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "ListLocale";
 }
 
-<h2>Index</h2>
+<h2>ListLocale</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -12,10 +12,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Category)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubCategory)
+            @Html.DisplayNameFor(model => model.Locale)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Slug)
@@ -29,20 +26,13 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Category)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SubCategory)
+            @Html.DisplayFor(modelItem => item.Locale)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Slug)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Active)
-        </td>
-        <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.Id })
         </td>
     </tr>
