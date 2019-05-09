@@ -8,121 +8,120 @@ using System.Web;
 using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
-using System.Text;
 using Microsoft.AspNet.Identity;
+using System.Text;
 
 namespace UI.Controllers
 {
-    [Authorize(Roles = "Admin")]
-    public class LocationsController : Controller
+    public class PostTypesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Locations
+        // GET: PostTypes
         public ActionResult Index()
         {
-            return View(db.Locations.ToList());
+            return View(db.PostType.ToList());
         }
 
 
-        //Get: Locales
-        public ActionResult ListLocale(string area)
+        public ActionResult ListSubCategories(string category)
         {
-             var locales = from loc in db.Locations
-                              where loc.Area == area
-                              select loc;
-            return View(locales.ToList());
+            var postTypes = from loc in db.PostType
+                          where loc.Category == category
+                          select loc;
+            return View(postTypes.ToList());
         }
-        // GET: Locations/Details/5
+        // GET: PostTypes/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
-            if (location == null)
+            PostType postType = db.PostType.Find(id);
+            if (postType == null)
             {
                 return HttpNotFound();
-            } 
-            return View(location);
+            }
+            return View(postType);
         }
 
-        // GET: Locations/Create
+        // GET: PostTypes/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Locations/Create
+        // POST: PostTypes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Area,Locale,Slug")] Location location)
+        public ActionResult Create([Bind(Include = "Id,Category,SubCategory,Slug")] PostType postType)
         {
             if (ModelState.IsValid)
             {
-                LocationOps.CreateLocation(location.Area, location.Locale, location.Slug);
+                PostTypesOps.CreatePostTypes(postType.Category, postType.SubCategory, postType.Slug);
                 return RedirectToAction("Index");
             }
 
-            return View(location);
+            return View(postType);
         }
 
-        // GET: Locations/Edit/5
+        // GET: PostTypes/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
-            if (location == null)
+            PostType postType = db.PostType.Find(id);
+            if (postType == null)
             {
                 return HttpNotFound();
             }
-            return View(location);
+            return View(postType);
         }
 
-        // POST: Locations/Edit/5
+        // POST: PostTypes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Area,Locale,Slug")] Location location)
+        public ActionResult Edit([Bind(Include = "Id,Category,SubCategory,Slug,Active")] PostType postType)
         {
             if (ModelState.IsValid)
             {
                 string userid = User.Identity.GetUserId();
-                LocationOps.UpdateLocation(UserRoles.GetCurrentUser(userid),location, out StringBuilder errors);
-                return RedirectToAction("ListLocale");
+                PostTypesOps.UpdatePostTypes(UserRoles.GetCurrentUser(userid), postType, out StringBuilder errors);
+                return RedirectToAction("Index");
             }
-            return View(location);
+            return View(postType);
         }
 
-        // GET: Locations/Delete/5
+        // GET: PostTypes/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
-            if (location == null)
+            PostType postType = db.PostType.Find(id);
+            if (postType == null)
             {
                 return HttpNotFound();
             }
-            return View(location);
+            return View(postType);
         }
 
-        // POST: Locations/Delete/5
+        // POST: PostTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
             string userid = User.Identity.GetUserId();
-            LocationOps.DeleteLocationById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
+            PostTypesOps.DeletePostTypeById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
+
             return RedirectToAction("Index");
         }
 

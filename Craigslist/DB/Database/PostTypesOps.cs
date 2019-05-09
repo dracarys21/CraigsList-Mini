@@ -1,33 +1,30 @@
-﻿using Data.Models.Data;
-using Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Text;
-using BizLogic.Logic;
 using System.Threading.Tasks;
-using System.Data.Entity.Migrations;
-using Microsoft.AspNet.Identity.EntityFramework;
-
+using Data.Models.Data;
+using Models;
 namespace DB.Database
 {
-   public class LocationOps
+    public class PostTypesOps
     {
-        public static void CreateLocation(string area, string locale, string slug)
+        public static void CreatePostTypes(string category, string subcategory, string slug)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    var location = new Location
+                    var postTypes= new PostType
                     {
-                        Area = area,
-                        Locale = locale,
+                        Category= category,
+                        SubCategory = subcategory,
                         Slug = slug,
                         Active = true
                     };
 
-                    db.Locations.Add(location);
+                    db.PostType.Add(postTypes);
                     db.SaveChanges();
                 }
             }
@@ -38,13 +35,13 @@ namespace DB.Database
             }
         }
 
-        public static Location GetLocationById(int locationId)
-        { 
+        public static PostType GetPostTypesById(int PostTypeId)
+        {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    return db.Locations.Find(locationId);
+                    return db.PostType.Find(PostTypeId);
                 }
             }
             catch (Exception e)
@@ -54,25 +51,25 @@ namespace DB.Database
             }
         }
 
-        public static IEnumerable<Location> GetLocalesByArea(string area)
+        public static IEnumerable<PostType> GetPostTypesByCategory(string category)
         {
             try
             {
-                using(var db =  new ApplicationDbContext())
+                using (var db = new ApplicationDbContext())
                 {
-                    var locales = from loc in db.Locations
-                                  where loc.Area == area
+                    var locales = from loc in db.PostType
+                                  where loc.Category == category
                                   select loc;
                     return locales;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
         }
-        public static void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
+        public static void DeletePostTypeById(ApplicationUser user, int postTypeId, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
@@ -80,7 +77,7 @@ namespace DB.Database
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    var location = GetLocationById(locationId);
+                    var location = GetPostTypesById(postTypeId);
 
                     if (location == null)
                     {
@@ -88,14 +85,14 @@ namespace DB.Database
                         return;
                     }
                     string roleId = UserRoles.GetAdminRoleId();
-                    if (!LocationActions.CanCRUDLocation(user, location))
+                  /*  if (!LocationActions.CanCRUDLocation(user, location))
                     {
                         errors.Append("Location cannot be deleted");
                         return;
-                    }
+                    }*/
 
-                    Location loccation = GetLocationById(locationId);
-                    location.Active = false;
+                    PostType Postype = GetPostTypesById(postTypeId);
+                   Postype.Active = false;
                     db.SaveChanges();
                 }
             }
@@ -106,35 +103,35 @@ namespace DB.Database
             }
         }
 
-        public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        public static void UpdatePostTypes(ApplicationUser user, PostType postType, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
                 string roleId = UserRoles.GetAdminRoleId();
-                if (!LocationActions.CanCRUDLocation(user, location))
+               /* if (!LocationActions.CanCRUDLocation(user, location))
                 {
                     errors.Append("Location cannot be updated.");
                     return;
-                }
+                }*/
 
                 using (var db = new ApplicationDbContext())
                 {
-                    var fetchedLocation = GetLocationById(location.Id);
+                    var fetchedPostType = GetPostTypesById(postType.Id);
 
-                    if (fetchedLocation == null)
+                    if (fetchedPostType == null)
                     {
                         errors.Append("Location does not exist.");
                         return;
                     }
 
-                    fetchedLocation.Active = location.Active;
-                    fetchedLocation.Slug = location.Slug;
-                    fetchedLocation.Area = location.Area;
-                    fetchedLocation.Locale = location.Locale;
+                    fetchedPostType.Active = postType.Active;
+                    fetchedPostType.Slug = postType.Slug;
+                    fetchedPostType.Category = postType.Category;
+                    fetchedPostType.SubCategory = postType.SubCategory;
 
-                    db.Locations.AddOrUpdate(fetchedLocation);
+                    db.PostType.AddOrUpdate(fetchedPostType);
                     db.SaveChanges();
                 }
             }
@@ -144,6 +141,5 @@ namespace DB.Database
                 throw;
             }
         }
-
     }
 }

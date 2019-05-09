@@ -101,6 +101,7 @@
     <Compile Include="Database\LocationOps.cs" />
     <Compile Include="Database\PostFilter.cs" />
     <Compile Include="Database\PostMessages.cs" />
+    <Compile Include="Database\PostTypesOps.cs" />
     <Compile Include="Database\UserPost.cs" />
     <Compile Include="Database\UserRoles.cs" />
     <Compile Include="Migrations\201904261054240_Initial Commit.cs" />
