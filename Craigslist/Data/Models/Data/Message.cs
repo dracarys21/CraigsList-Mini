@@ -14,17 +14,24 @@ namespace Data.Models.Data
         {
             CreateDate = DateTime.Now;
         }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
         [Required]
         public string Body { get; set; }
+
         [Required]
         public ApplicationUser SendTo { get; set; }
+
         public DateTime CreateDate { get; set; }
+
         [Required]
         public ApplicationUser CreatedBy { get; set; }
+
         public bool Deleted { get; set; }
+
         public bool Read { get; set; }
     }
 }

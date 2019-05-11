@@ -104,17 +104,9 @@
     <Compile Include="Database\PostTypesOps.cs" />
     <Compile Include="Database\UserPost.cs" />
     <Compile Include="Database\UserRoles.cs" />
-    <Compile Include="Migrations\201904261054240_Initial Commit.cs" />
-    <Compile Include="Migrations\201904261054240_Initial Commit.Designer.cs">
-      <DependentUpon>201904261054240_Initial Commit.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905012108228_Messages.cs" />
-    <Compile Include="Migrations\201905012108228_Messages.Designer.cs">
-      <DependentUpon>201905012108228_Messages.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905051458358_Update in Databases.cs" />
-    <Compile Include="Migrations\201905051458358_Update in Databases.Designer.cs">
-      <DependentUpon>201905051458358_Update in Databases.cs</DependentUpon>
+    <Compile Include="Migrations\201905112116295_InitialCommit.cs" />
+    <Compile Include="Migrations\201905112116295_InitialCommit.Designer.cs">
+      <DependentUpon>201905112116295_InitialCommit.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -136,17 +128,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201904261054240_Initial Commit.resx">
-      <DependentUpon>201904261054240_Initial Commit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905012108228_Messages.resx">
-      <DependentUpon>201905012108228_Messages.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905051458358_Update in Databases.resx">
-      <DependentUpon>201905051458358_Update in Databases.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.6.1 %28x86 and x64%29</ProductName>
@@ -157,6 +138,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201905112116295_InitialCommit.resx">
+      <DependentUpon>201905112116295_InitialCommit.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -13,7 +13,7 @@ namespace DB.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201904261054240_Initial Commit"; }
+            get { return "201905112116295_InitialCommit"; }
         }
         
         string IMigrationMetadata.Source
