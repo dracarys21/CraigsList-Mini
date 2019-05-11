@@ -12,7 +12,7 @@ namespace DB.Database
 {
     class LocationOps
     {
-        public void CreateLocation(string area, string locale, string slug)
+        public static void CreateLocation(string area, string locale, string slug)
         {
             try
             {
@@ -23,7 +23,7 @@ namespace DB.Database
                         Area = area,
                         Locale = locale,
                         Slug = slug,
-                        Active = false
+                        Active = true
                     };
 
                     db.Locations.Add(location);
@@ -37,7 +37,7 @@ namespace DB.Database
             }
         }
 
-        public Location GetLocationById(int locationId)
+        public static Location GetLocationById(int locationId)
         {
             try
             {
@@ -53,7 +53,64 @@ namespace DB.Database
             }
         }
 
-        public void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
+        public static Dictionary<string,  List<string>> GetAllLocations()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allLocations = from loc in db.Locations
+                                       where loc.Active == true
+                                       select new
+                                       {
+                                           area = loc.Area,
+                                           locale = loc.Locale
+                                       };
+
+                    var locationGroup = from loc in allLocations
+                                        group loc by loc.area into newGroup
+                                        select newGroup;
+
+                    Dictionary<string, List<string>> ActiveLocations = new Dictionary<string, List<string>>();
+                    foreach (var location in locationGroup)
+                    {
+                        string areaName = location.Key;
+                        List<string> localeList = new List<string>();
+                        foreach (var locale in location)
+                        {
+                            localeList.Add(locale.locale);
+                        }
+                        ActiveLocations.Add(areaName, localeList);
+                    }
+                    return ActiveLocations;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static IEnumerable<Location> GetLocalesByArea(string area)
+        {
+            try
+            {
+                using(var db =  new ApplicationDbContext())
+                {
+                    var locales = from loc in db.Locations
+                                  where loc.Area == area
+                                  select loc;
+                    return locales;
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        public static void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
         {
             errors = new StringBuilder();
 

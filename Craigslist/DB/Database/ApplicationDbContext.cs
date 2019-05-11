@@ -27,5 +27,24 @@ namespace DB.Database
         public DbSet<Message> Message { get; set; }
 
        // public DbSet<Inbox> Inbox { get; set; }
+//
+//       protected override void OnModelCreating(DbModelBuilder modelBuilder)
+//       {
+//           // Setting up PKs
+//           modelBuilder.Entity<IdentityUserLogin>()
+//               .HasKey(t => t.UserId);
+//
+//           modelBuilder.Entity<IdentityUserRole>()
+//               .HasKey(t => t.RoleId);
+//
+//           // Setup ForeignKey relationships
+//           modelBuilder.Entity<Message>()
+//               .HasRequired(m => m.SendTo)
+//               .WithRequiredPrincipal();
+//
+//           modelBuilder.Entity<Message>()
+//               .HasRequired(m => m.CreatedBy)
+//               .WithRequiredPrincipal();
+//       }
     }
 }
