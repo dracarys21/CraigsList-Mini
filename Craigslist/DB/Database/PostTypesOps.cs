@@ -35,7 +35,18 @@ namespace DB.Database
             }
         }
 
-        public static PostType GetPostTypesById(int PostTypeId)
+        public static ICollection<PostType> GetDistinctPostTypes()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                var pt = from p in db.PostType
+                         select p;
+                return pt.GroupBy(p => p.Category).Select(p => p.FirstOrDefault()).ToList();
+                        
+            }
+        }
+
+        public static PostType GetPostTypesById(int? PostTypeId)
         {
             try
             {
@@ -51,7 +62,7 @@ namespace DB.Database
             }
         }
 
-        public static IEnumerable<PostType> GetPostTypesByCategory(string category)
+        public static ICollection<PostType> GetPostTypesByCategory(string category)
         {
             try
             {
@@ -60,7 +71,7 @@ namespace DB.Database
                     var locales = from loc in db.PostType
                                   where loc.Category == category
                                   select loc;
-                    return locales;
+                    return locales.ToList();
                 }
             }
             catch (Exception e)

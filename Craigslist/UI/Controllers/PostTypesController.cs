@@ -14,22 +14,18 @@ using System.Text;
 namespace UI.Controllers
 {
     public class PostTypesController : Controller
-    {
-        private ApplicationDbContext db = new ApplicationDbContext();
+    { 
 
         // GET: PostTypes
         public ActionResult Index()
         {
-            return View(db.PostType.ToList());
+            return View(PostTypesOps.GetDistinctPostTypes());
         }
 
 
         public ActionResult ListSubCategories(string category)
         {
-            var postTypes = from loc in db.PostType
-                          where loc.Category == category
-                          select loc;
-            return View(postTypes.ToList());
+            return View(PostTypesOps.GetPostTypesByCategory(category));
         }
         // GET: PostTypes/Details/5
         public ActionResult Details(int? id)
@@ -38,7 +34,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = db.PostType.Find(id);
+            PostType postType = PostTypesOps.GetPostTypesById(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -75,7 +71,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = db.PostType.Find(id);
+            PostType postType = PostTypesOps.GetPostTypesById(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -106,7 +102,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = db.PostType.Find(id);
+            PostType postType = PostTypesOps.GetPostTypesById(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -123,15 +119,6 @@ namespace UI.Controllers
             PostTypesOps.DeletePostTypeById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
 
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

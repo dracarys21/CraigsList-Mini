@@ -38,7 +38,7 @@ namespace DB.Database
             }
         }
 
-        public static Location GetLocationById(int locationId)
+        public static Location GetLocationById(int? locationId)
         { 
             try
             {
@@ -54,7 +54,17 @@ namespace DB.Database
             }
         }
 
-        public static IEnumerable<Location> GetLocalesByArea(string area)
+        public static ICollection<Location> GetDistinctLocation()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                var pt = from p in db.Locations
+                         select p;
+                return pt.GroupBy(p => p.Area).Select(p => p.FirstOrDefault()).ToList();
+
+            }
+        }
+        public static ICollection<Location> GetLocalesByArea(string area)
         {
             try
             {
@@ -63,7 +73,7 @@ namespace DB.Database
                     var locales = from loc in db.Locations
                                   where loc.Area == area
                                   select loc;
-                    return locales;
+                    return locales.ToList();
                 }
             }
             catch(Exception e)
