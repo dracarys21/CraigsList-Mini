@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Models;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using Data.Models.Data;
 
 namespace DB.Database
@@ -26,6 +27,16 @@ namespace DB.Database
 
         public DbSet<Message> Message { get; set; }
 
-       // public DbSet<Inbox> Inbox { get; set; }
+        public DbSet<Data.Models.PostFilterViewModel> PostFilterViewModels { get; set; }
+
+        // public DbSet<Inbox> Inbox { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+        }
     }
 }

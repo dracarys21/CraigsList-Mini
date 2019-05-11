@@ -9,14 +9,22 @@ using Models;
 
 namespace DB.Database
 {
-    public class UserPost
+    public static class UserPost
     {
-        public static void CreatePost(ApplicationUser createdBy, string title, string body)
+        public static void CreatePost(string createdByUserId, string title, string body,
+            PostType postType, Location location)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
+                    var createdBy = (from user in db.Users
+                        where user.Id.Equals(createdByUserId)
+                        select user).FirstOrDefault();
+
+                    if (createdBy == null)
+                        throw new Exception("User not allowed to create a post");
+
                     var post = new Post {
                         Title = title,
                         Body = body,
@@ -24,7 +32,10 @@ namespace DB.Database
                         CreateDate = DateTime.Now,
                         Author = createdBy,
                         LastModifiedDate = DateTime.Now,
-                        LastModifiedBy = createdBy
+                        LastModifiedBy = createdBy,
+                        PostType = postType,
+                        Location = location,
+                        ExpirationDate = DateTime.Now.AddDays(5)
                     };
 
                     db.Posts.Add(post);
