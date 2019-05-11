@@ -108,6 +108,10 @@
     <Compile Include="Migrations\201905112257542_InitialCommit.Designer.cs">
       <DependentUpon>201905112257542_InitialCommit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905112311081_Remove-Viewmodel.cs" />
+    <Compile Include="Migrations\201905112311081_Remove-Viewmodel.Designer.cs">
+      <DependentUpon>201905112311081_Remove-Viewmodel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -142,6 +146,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201905112257542_InitialCommit.resx">
       <DependentUpon>201905112257542_InitialCommit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905112311081_Remove-Viewmodel.resx">
+      <DependentUpon>201905112311081_Remove-Viewmodel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

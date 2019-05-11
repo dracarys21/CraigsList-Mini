@@ -27,8 +27,6 @@ namespace DB.Database
 
         public DbSet<Message> Message { get; set; }
 
-        public DbSet<Data.Models.PostFilterViewModel> PostFilterViewModels { get; set; }
-
         // public DbSet<Inbox> Inbox { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
