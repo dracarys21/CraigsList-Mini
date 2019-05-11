@@ -54,6 +54,45 @@ namespace DB.Database
             }
         }
 
+        public static Dictionary<string,  List<string>> GetAllLocations()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allLocations = from loc in db.Locations
+                                       where loc.Active == true
+                                       select new
+                                       {
+                                           area = loc.Area,
+                                           locale = loc.Locale
+                                       };
+
+                    var locationGroup = from loc in allLocations
+                                        group loc by loc.area into newGroup
+                                        select newGroup;
+
+                    Dictionary<string, List<string>> ActiveLocations = new Dictionary<string, List<string>>();
+                    foreach (var location in locationGroup)
+                    {
+                        string areaName = location.Key;
+                        List<string> localeList = new List<string>();
+                        foreach (var locale in location)
+                        {
+                            localeList.Add(locale.locale);
+                        }
+                        ActiveLocations.Add(areaName, localeList);
+                    }
+                    return ActiveLocations;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public static IEnumerable<Location> GetLocalesByArea(string area)
         {
             try

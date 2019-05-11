@@ -51,6 +51,45 @@ namespace DB.Database
             }
         }
 
+        public static Dictionary<string, List<string>> GetAllPostTypes()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allPostTypes = from postType in db.PostType
+                                       where postType.Active == true
+                                       select new
+                                       {
+                                           category = postType.Category,
+                                           subcategory = postType.SubCategory
+                                       };
+
+                    var categoryGroup = from postType in allPostTypes
+                                        group postType by postType.category into newGroup
+                                        select newGroup;
+
+                    Dictionary<string, List<string>> ActivePostTypes = new Dictionary<string, List<string>>();
+                    foreach (var category in categoryGroup)
+                    {
+                        string categoryName = category.Key;
+                        List<string> subcategories = new List<string>();
+                        foreach (var sub in category)
+                        {
+                            subcategories.Add(sub.subcategory);
+                        }
+                        ActivePostTypes.Add(categoryName, subcategories);
+                    }
+                    return ActivePostTypes;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public static IEnumerable<PostType> GetPostTypesByCategory(string category)
         {
             try
