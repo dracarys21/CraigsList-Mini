@@ -7,11 +7,10 @@ using System.Text;
 using BizLogic.Logic;
 using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace DB.Database
 {
-   public class LocationOps
+    class LocationOps
     {
         public static void CreateLocation(string area, string locale, string slug)
         {
@@ -126,15 +125,14 @@ namespace DB.Database
                         errors.Append("Location does not exist\n");
                         return;
                     }
-                    string roleId = UserRoles.GetAdminRoleId();
+
                     if (!LocationActions.CanCRUDLocation(user, location))
                     {
                         errors.Append("Location cannot be deleted");
                         return;
                     }
 
-                    Location loccation = GetLocationById(locationId);
-                    location.Active = false;
+                    db.Locations.Remove(location);
                     db.SaveChanges();
                 }
             }
@@ -145,13 +143,12 @@ namespace DB.Database
             }
         }
 
-        public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        public void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
-                string roleId = UserRoles.GetAdminRoleId();
                 if (!LocationActions.CanCRUDLocation(user, location))
                 {
                     errors.Append("Location cannot be updated.");
@@ -170,6 +167,40 @@ namespace DB.Database
 
                     fetchedLocation.Active = location.Active;
                     fetchedLocation.Slug = location.Slug;
+
+                    db.Locations.AddOrUpdate(fetchedLocation);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public void EditLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+
+            try
+            {
+                if (!LocationActions.CanCRUDLocation(user, location))
+                {
+                    errors.Append("Location cannot be edited.");
+                    return;
+                }
+
+                using (var db = new ApplicationDbContext())
+                {
+                    var fetchedLocation = GetLocationById(location.Id);
+
+                    if (fetchedLocation == null)
+                    {
+                        errors.Append("Location does not exist.");
+                        return;
+                    }
+
                     fetchedLocation.Area = location.Area;
                     fetchedLocation.Locale = location.Locale;
 

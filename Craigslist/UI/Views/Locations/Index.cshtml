@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Data.Models.Data.Location>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Area)
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr onclick="location.href = '@(Url.Action("ListLocale", new { area = item.Area }))'">
+        <td>
+            @Html.DisplayFor(modelItem => item.Area)
+        </td>
+        <td>
+            @Html.ActionLink("List Locale", "ListLocale", new { area = item.Area }) 
+        </td>
+    </tr>
+}
+
+</table>
