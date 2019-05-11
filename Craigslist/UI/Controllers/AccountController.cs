@@ -5,10 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
-using DB.Database;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Models;
@@ -83,14 +80,7 @@ namespace UI.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    {
-                        Response.Cookies["Location"]["Area"] = "New York";
-                        Response.Cookies["Location"]["Locale"] = "Manhattan";
-                        string role = UserRoles.GetUserRole(model.Email);
-                        if (role == "Admin")
-                            return RedirectToAction("Index", "Admin");
-                        return RedirectToAction("Index","Posts");
-                    }
+                    return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -162,19 +152,12 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-         
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    if (!UserRoles.CreateAdminRole())
-                    {
-                        UserRoles.ChangeUserRole(model.Email);
-                        return RedirectToAction("Index", "Admin");
-                    }
-        
+                    
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
