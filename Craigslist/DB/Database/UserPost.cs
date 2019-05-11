@@ -11,7 +11,7 @@ namespace DB.Database
 {
     public class UserPost
     {
-        public void CreatePost(ApplicationUser createdBy, string title, string body)
+        public static void CreatePost(ApplicationUser createdBy, string title, string body)
         {
             try
             {
@@ -38,14 +38,14 @@ namespace DB.Database
             }
         }
 
-        public List<Post> GetPostsByUser(ApplicationUser user)
+        public static List<Post> GetPostsByUser(ApplicationUser user)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
                     var posts = from post in db.Posts
-                        where post.Author.Equals(user)
+                        where post.Author.Id==user.Id
                               && post.Deleted == false
                         select post;
 
@@ -59,7 +59,7 @@ namespace DB.Database
             }
         }
 
-        public void DeletePostById(ApplicationUser user, int postId,
+        public static void DeletePostById(ApplicationUser user, int postId,
             out StringBuilder errors)
         {
             errors = new StringBuilder();
@@ -94,7 +94,7 @@ namespace DB.Database
             }
         }
 
-        public Post GetPostById(int postId)
+        public static Post GetPostById(int postId)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace DB.Database
             }
         }
 
-        public void UpdatePost(ApplicationUser user, Post post, out StringBuilder errors)
+        public static void UpdatePost(ApplicationUser user, Post post, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
@@ -151,7 +151,7 @@ namespace DB.Database
             }
         }
 
-        public void RespondToPost(ApplicationUser user, int postId, string message)
+        public static void RespondToPost(ApplicationUser user, int postId, string message)
         {
             try
             {

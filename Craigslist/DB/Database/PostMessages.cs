@@ -52,8 +52,7 @@ namespace DB.Database
             try
             {
                 List<Message> Messages = new List<Message>();
-                UserPost p = new UserPost();
-                List<Post> posts = p.GetPostsByUser(User);
+                List<Post> posts = UserPost.GetPostsByUser(User);
                 foreach (var post in posts)
                 {
                     foreach (var message in post.Messages)
