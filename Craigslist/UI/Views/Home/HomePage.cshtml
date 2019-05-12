@@ -1,10 +1,11 @@
-﻿@model Data.Models.HomePageViewModel
+﻿
+@model Data.Models.HomePageViewModel
 
 @{
     ViewBag.Title = "CraigsList";
 }
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <div class="col-sm-2" style="background-color: wheat;">
             One of three columns
@@ -19,25 +20,25 @@
             <div class="row">
                 @foreach (KeyValuePair<string, List<string>> keyValuePair in Model.AllCategories)
                 {
-                    <div class="col-sm-4">
-                        <div class="card" style="max-width: 18rem; border-style: groove; margin: 10px; height: 150px;">
-                            <div class="card-title text-center">
-                                @Html.ActionLink(keyValuePair.Key, "")
-                            </div>
-                            <div class="pre-scrollable" style="overflow-y: auto; max-height: 140px;">
-                                <div class="card-text">
-                                    <ul class="list-group">
-                                        @foreach (string subcategory in keyValuePair.Value)
-                                        {
-                                            <li class="list-group-item text-center">
-                                                @Html.ActionLink(subcategory, "", "")
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                <div class="col-sm-4">
+                    <div class="card" style="max-width: 18rem; margin: 10px; height: 150px;">
+                        <div class="card-title text-center">
+                            @Html.ActionLink(keyValuePair.Key, "")
+                        </div>
+                        <div class="pre-scrollable" style="overflow-y: auto; max-height: 140px;">
+                            <div class="card-text">
+                                <ul class="list-group">
+                                    @foreach (string subcategory in keyValuePair.Value)
+                                    {
+                                        <li class="list-group-item text-center">
+                                            @Html.ActionLink(subcategory, "", "")
+                                        </li>
+                                    }
+                                </ul>
                             </div>
                         </div>
                     </div>
+                </div>
                 }
             </div>
         </div>
