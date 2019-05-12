@@ -14,6 +14,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Area)
         </th>
+        <th></th>
     </tr>
 
 @foreach (var item in Model) {
@@ -22,7 +23,8 @@
             @Html.DisplayFor(modelItem => item.Area)
         </td>
         <td>
-            @Html.ActionLink("List Locale", "ListLocale", new { area = item.Area }) 
+            @Html.ActionLink("List Locale", "ListLocale", new { area = item.Area }) |
+            @Html.ActionLink("Delete Area", "DeleteArea", new { area = item.Area })
         </td>
     </tr>
 }

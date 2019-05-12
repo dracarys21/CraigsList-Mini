@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using Data.Models;
 
 namespace DB.Database
 {
@@ -36,6 +37,35 @@ namespace DB.Database
             }
         }
 
+       public static ICollection<AdminUserDisplayViewModel> GetUsers()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    string admin_roleid = GetAdminRoleId();
+                    var users = from u in db.Users
+                                where u.Roles.FirstOrDefault().RoleId != admin_roleid
+                                select u;
+                    List<AdminUserDisplayViewModel> icollection = new List<AdminUserDisplayViewModel>();
+                    AdminUserDisplayViewModel t;
+                    foreach (var us in users)
+                    {
+                        t = new AdminUserDisplayViewModel();
+                        t.Email = us.Email;
+                        t.UserName = us.UserName;
+                        t.UserId = us.Id;
+                        icollection.Add(t);
+                    }
+                    return icollection;
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
         public static bool ChangeUserRole(String userName)
         {
             try
@@ -107,7 +137,7 @@ namespace DB.Database
             }
         }
 
-        public static ApplicationUser GetCurrentUser(string id)
+        public static ApplicationUser GetUserById(string id)
         {
             try
             {
@@ -115,6 +145,25 @@ namespace DB.Database
                 {
                     var users = from u in db.Users
                                 where u.Id.CompareTo(id) == 0
+                                select u;
+                    return users.FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static ApplicationUser GetUserByUserName(string username)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var users = from u in db.Users
+                                where u.UserName.CompareTo(username) == 0
                                 select u;
                     return users.FirstOrDefault();
                 }

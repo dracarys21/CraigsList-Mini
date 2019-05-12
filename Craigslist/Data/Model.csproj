@@ -101,12 +101,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AdminUserDisplayViewModel.cs" />
     <Compile Include="Models\ChangeUserToAdminViewModel.cs" />
+    <Compile Include="Models\DeleteAreaOrCategoryViewModel.cs" />
     <Compile Include="Models\Data\Message.cs" />
     <Compile Include="Models\Data\PostType.cs" />
     <Compile Include="Models\Data\Location.cs" />
     <Compile Include="Models\Data\Post.cs" />
-    <Compile Include="Models\HomePageViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

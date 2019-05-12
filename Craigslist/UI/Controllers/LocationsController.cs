@@ -16,22 +16,19 @@ namespace UI.Controllers
     [Authorize(Roles = "Admin")]
     public class LocationsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+      //  private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Locations
         public ActionResult Index()
         {
-            return View(db.Locations.ToList());
+            return View(LocationOps.GetDistinctLocation());
         }
 
 
         //Get: Locales
         public ActionResult ListLocale(string area)
         {
-             var locales = from loc in db.Locations
-                              where loc.Area == area
-                              select loc;
-            return View(locales.ToList());
+            return View(LocationOps.GetLocalesByArea(area));
         }
         // GET: Locations/Details/5
         public ActionResult Details(int? id)
@@ -40,7 +37,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
+            Location location = LocationOps.GetLocationById(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -77,7 +74,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
+            Location location = LocationOps.GetLocationById(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -95,8 +92,8 @@ namespace UI.Controllers
             if (ModelState.IsValid)
             {
                 string userid = User.Identity.GetUserId();
-                LocationOps.UpdateLocation(UserRoles.GetCurrentUser(userid),location, out StringBuilder errors);
-                return RedirectToAction("ListLocale");
+                LocationOps.UpdateLocation(UserRoles.GetUserById(userid),location, out StringBuilder errors);
+                return RedirectToAction("ListLocale",new {area = location.Area });
             }
             return View(location);
         }
@@ -108,7 +105,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = db.Locations.Find(id);
+            Location location = LocationOps.GetLocationById(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -122,17 +119,35 @@ namespace UI.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             string userid = User.Identity.GetUserId();
-            LocationOps.DeleteLocationById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
+            LocationOps.DeleteLocationById(UserRoles.GetUserById(userid), id, out StringBuilder error);
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
+
+        public ActionResult DeleteArea(string area )
         {
-            if (disposing)
+            if (area == null)
             {
-                db.Dispose();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            base.Dispose(disposing);
+            Location location = LocationOps.GetLocalesByArea(area).FirstOrDefault();
+            if (location == null)
+            {
+                return HttpNotFound();
+            }
+            DeleteAreaOrCategoryViewModel v = new DeleteAreaOrCategoryViewModel();
+            v.Upper = location.Area;
+            return View(v);
+        }
+
+        // POST: Locations/Delete/5
+        [HttpPost, ActionName("DeleteArea")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAreaConfirmed(string area)
+        {
+            string userid = User.Identity.GetUserId();
+            LocationOps.DeleteLocationByArea(area, out StringBuilder error);
+            return RedirectToAction("Index");
         }
     }
 }

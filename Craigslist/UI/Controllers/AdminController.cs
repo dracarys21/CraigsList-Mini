@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Data.Models.Data;
 using DB.Database;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -6,6 +7,8 @@ using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -18,25 +21,59 @@ namespace UI.Controllers
         {
             return View();
         }
-
-        // Get: ChangeUserToAdmin
-        public ActionResult ChangeUserToAdmin()
+        public ActionResult DisplayUsers()
         {
-            return View();
+            return View(UserRoles.GetUsers());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        //Post: ChangeUserToAdmin
-        public ActionResult ChangeUserToAdmin([Bind(Include = "Id,Email")] ChangeUserToAdminViewModel cua)
+        public ActionResult UserPosts(string username)
         {
-            if (ModelState.IsValid)
+            if (username == null)
             {
-                if (UserRoles.ChangeUserRole(cua.Email))
-                  return  RedirectToAction("Index");
-                ModelState.AddModelError("","User Name does not exists");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            return View(cua);
+            ApplicationUser user = UserRoles.GetUserByUserName(username);
+            var posts = UserPost.GetPostsByUser(user);
+            if (posts == null)
+            {
+                return HttpNotFound();
+            }
+            return View(posts);
+        }
+
+        // Get: ChangeUserToAdmin
+        // GET: Locations/Delete/5
+        public ActionResult ChangeUserToAdmin(string username)
+        {
+            if (username == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            ApplicationUser user = UserRoles.GetUserByUserName(username);
+
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+            AdminUserDisplayViewModel u = new AdminUserDisplayViewModel();
+            u.Email = user.Email;
+            u.UserName = user.UserName;
+            u.UserId = user.Id;
+            return View(u);
+        }
+
+        public ActionResult ChangeUserToAdminConfirmed(string username)
+        {
+            ApplicationUser user = UserRoles.GetUserByUserName(username);
+            AdminUserDisplayViewModel u = new AdminUserDisplayViewModel();
+            u.Email = user.Email;
+            u.UserName = user.UserName;
+            u.UserId = user.Id;
+
+            if (UserRoles.ChangeUserRole(username))
+                return RedirectToAction("Index");
+            ModelState.AddModelError("","User Name Does not exists");
+            return View(u);
         }
     }
 }
