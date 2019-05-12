@@ -35,19 +35,7 @@ namespace DB.Database
             }
         }
 
-        public static ICollection<PostType> GetDistinctPostTypes()
-        {
-            using (var db = new ApplicationDbContext())
-            {
-                var pt = from p in db.PostType
-                         where p.Active == true
-                         select p;
-                return pt.GroupBy(p => p.Category).Select(p => p.FirstOrDefault()).ToList();
-                        
-            }
-        }
-
-        public static PostType GetPostTypesById(int? PostTypeId)
+        public static PostType GetPostTypesById(int PostTypeId)
         {
             try
             {
@@ -63,6 +51,46 @@ namespace DB.Database
             }
         }
 
+        public static Dictionary<string, List<string>> GetAllPostTypes()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allPostTypes = from postType in db.PostType
+                                       where postType.Active == true
+                                       select new
+                                       {
+                                           category = postType.Category,
+                                           subcategory = postType.SubCategory
+                                       };
+
+                    var categoryGroup = from postType in allPostTypes
+                                        group postType by postType.category into newGroup
+                                        select newGroup;
+
+                    Dictionary<string, List<string>> ActivePostTypes = new Dictionary<string, List<string>>();
+                    foreach (var category in categoryGroup)
+                    {
+                        string categoryName = category.Key;
+                        List<string> subcategories = new List<string>();
+                        foreach (var sub in category)
+                        {
+                            subcategories.Add(sub.subcategory);
+                        }
+                        ActivePostTypes.Add(categoryName, subcategories);
+                    }
+                    return ActivePostTypes;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+<<<<<<< HEAD
         public static void DeletePostTypeByCategory(string category, out StringBuilder errors)
         {
             errors = new StringBuilder();
@@ -97,6 +125,9 @@ namespace DB.Database
 
 
         public static ICollection<PostType> GetPostTypesByCategory(string category)
+=======
+        public static IEnumerable<PostType> GetPostTypesByCategory(string category)
+>>>>>>> 05f6fccd832020373253d9d41250abd081591a1e
         {
             try
             {
@@ -105,7 +136,7 @@ namespace DB.Database
                     var locales = from loc in db.PostType
                                   where loc.Category == category && loc.Active
                                   select loc;
-                    return locales.ToList();
+                    return locales;
                 }
             }
             catch (Exception e)

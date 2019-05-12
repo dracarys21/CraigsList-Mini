@@ -45,7 +45,7 @@ namespace DB.Database
                 using (var db = new ApplicationDbContext())
                 {
                     var posts = from post in db.Posts
-                        where post.Author.Id==user.Id
+                        where post.Author.Equals(user)
                               && post.Deleted == false
                         select post;
 

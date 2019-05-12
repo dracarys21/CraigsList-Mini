@@ -8,12 +8,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-
 namespace BizLogic.Logic
-{ 
+{
     public static class LocationActions
     {
-        public static bool CanCRUDLocation(ApplicationUser user, Location newLocation )
+        public static bool CanCRUDLocation(ApplicationUser user, Location newLocation)
         {
             //var hasPermission = (user.Roles.IsReadOnly) ? true : false;
             var isValidArea = !string.IsNullOrEmpty(newLocation.Area);

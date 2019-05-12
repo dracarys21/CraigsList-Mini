@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Data.Models;
+using Data.Models.Data;
+using DB.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,9 +11,14 @@ namespace UI.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+
+        public ActionResult HomePage()
         {
-            return View();
+            Dictionary<string, List<string>> activeLocs = LocationOps.GetAllLocations();
+            Dictionary<string, List<string>> activeCategories = PostTypesOps.GetAllPostTypes();
+
+            HomePageViewModel homePageViewModel = new HomePageViewModel(activeLocs, activeCategories);
+            return View(homePageViewModel);
         }
 
         public ActionResult About()

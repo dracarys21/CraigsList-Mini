@@ -16,19 +16,22 @@ namespace UI.Controllers
     [Authorize(Roles = "Admin")]
     public class LocationsController : Controller
     {
-      //  private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Locations
         public ActionResult Index()
         {
-            return View(LocationOps.GetDistinctLocation());
+            return View(db.Locations.ToList());
         }
 
 
         //Get: Locales
         public ActionResult ListLocale(string area)
         {
-            return View(LocationOps.GetLocalesByArea(area));
+             var locales = from loc in db.Locations
+                              where loc.Area == area
+                              select loc;
+            return View(locales.ToList());
         }
         // GET: Locations/Details/5
         public ActionResult Details(int? id)
@@ -37,7 +40,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = LocationOps.GetLocationById(id);
+            Location location = db.Locations.Find(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -74,7 +77,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = LocationOps.GetLocationById(id);
+            Location location = db.Locations.Find(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -105,7 +108,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Location location = LocationOps.GetLocationById(id);
+            Location location = db.Locations.Find(id);
             if (location == null)
             {
                 return HttpNotFound();
@@ -148,6 +151,15 @@ namespace UI.Controllers
             string userid = User.Identity.GetUserId();
             LocationOps.DeleteLocationByArea(area, out StringBuilder error);
             return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

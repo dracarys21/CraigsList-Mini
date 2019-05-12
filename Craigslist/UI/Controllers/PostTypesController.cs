@@ -14,18 +14,22 @@ using System.Text;
 namespace UI.Controllers
 {
     public class PostTypesController : Controller
-    { 
+    {
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: PostTypes
         public ActionResult Index()
         {
-            return View(PostTypesOps.GetDistinctPostTypes());
+            return View(db.PostType.ToList());
         }
 
 
         public ActionResult ListSubCategories(string category)
         {
-            return View(PostTypesOps.GetPostTypesByCategory(category));
+            var postTypes = from loc in db.PostType
+                          where loc.Category == category
+                          select loc;
+            return View(postTypes.ToList());
         }
         // GET: PostTypes/Details/5
         public ActionResult Details(int? id)
@@ -34,7 +38,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+            PostType postType = db.PostType.Find(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -71,7 +75,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+            PostType postType = db.PostType.Find(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -102,7 +106,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+            PostType postType = db.PostType.Find(id);
             if (postType == null)
             {
                 return HttpNotFound();
@@ -146,6 +150,15 @@ namespace UI.Controllers
             string userid = User.Identity.GetUserId();
             PostTypesOps.DeletePostTypeByCategory(category, out StringBuilder error);
             return RedirectToAction("Index");
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
