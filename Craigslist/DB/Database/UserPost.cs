@@ -12,7 +12,7 @@ namespace DB.Database
     public static class UserPost
     {
         public static void CreatePost(string createdByUserId, string title, string body,
-            PostType postType, Location location)
+            string category, string subCategory, string area, string locale)
         {
             try
             {
@@ -24,6 +24,17 @@ namespace DB.Database
 
                     if (createdBy == null)
                         throw new Exception("User not allowed to create a post");
+
+                    var postType = PostTypesOps.GetPostTypeByCategoryAndSubCategory(
+                        category, subCategory);
+
+                    if (postType == null)
+                        throw new Exception("Post Type is invalid");
+
+                    var location = LocationOps.GetLocationByAreaAndLocale(area, locale);
+
+                    if (location == null)
+                        throw new Exception("Location is invalid");
 
                     var post = new Post {
                         Title = title,
@@ -49,15 +60,15 @@ namespace DB.Database
             }
         }
 
-        public static List<Post> GetPostsByUser(ApplicationUser user)
+        public static List<Post> GetPostsByUserId(string userId)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
                     var posts = from post in db.Posts
-                        where post.Author.Equals(user)
-                              && post.Deleted == false
+                        where post.Author.Id.Equals(userId)
+                              && !post.Deleted
                         select post;
 
                     return posts.ToList();
@@ -70,7 +81,7 @@ namespace DB.Database
             }
         }
 
-        public static void DeletePostById(ApplicationUser user, int postId,
+        public static void DeletePostByPostId(string userId, int postId,
             out StringBuilder errors)
         {
             errors = new StringBuilder();
@@ -87,7 +98,7 @@ namespace DB.Database
                         return;
                     }
                         
-                    if (!PostActions.CanDeletePost(user, post))
+                    if (!PostActions.CanDeletePost(userId, post))
                     {
                         errors.Append("Post cannot be deleted");
                         return;

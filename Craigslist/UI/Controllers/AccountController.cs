@@ -86,9 +86,10 @@ namespace UI.Controllers
                     {
                         Response.Cookies["Location"]["Area"] = "New York";
                         Response.Cookies["Location"]["Locale"] = "Manhattan";
-                        string role = UserRoles.GetUserRole(model.Email);
-                        if (role == "Admin")
+
+                        if (User.IsInRole("Admin"))
                             return RedirectToAction("Index", "Admin");
+
                         return RedirectToAction("Index","Posts");
                     }
                 case SignInStatus.LockedOut:
@@ -167,10 +168,14 @@ namespace UI.Controllers
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    if (!UserRoles.CreateAdminRole())
+
+                    if (UserManagement.IsFirstUser())
                     {
-                        UserRoles.ChangeUserRole(model.Email);
-                        return RedirectToAction("Index", "Admin");
+                        await UserManager.AddToRoleAsync(user.Id, "Admin");
+                    }
+                    else
+                    {
+                        await UserManager.AddToRoleAsync(user.Id, "User");
                     }
         
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
@@ -179,7 +184,7 @@ namespace UI.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("HomePage", "Home");
                 }
                 AddErrors(result);
             }

@@ -21,9 +21,9 @@ namespace BizLogic.Logic
                 && hasLocation && hasPostType;
         }
 
-        public static bool CanDeletePost(ApplicationUser user, Post post)
+        public static bool CanDeletePost(string userId, Post post)
         {
-            var isPostOwner = post.Author.Equals(user);
+            var isPostOwner = post.Author.Id.Equals(userId);
 
             return isPostOwner;
         }

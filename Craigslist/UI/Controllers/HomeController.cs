@@ -1,10 +1,5 @@
 ﻿using Data.Models;
-using Data.Models.Data;
 using DB.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace UI.Controllers
@@ -14,11 +9,10 @@ namespace UI.Controllers
 
         public ActionResult HomePage()
         {
-            Dictionary<string, List<string>> activeLocs = LocationOps.GetAllLocations();
-            Dictionary<string, List<string>> activeCategories = PostTypesOps.GetAllPostTypes();
+            var activeLocs = LocationOps.GetActiveLocationsList();
+            var activeCategories = PostTypesOps.GetActivePostTypesList();
 
-            HomePageViewModel homePageViewModel = new HomePageViewModel(activeLocs, activeCategories);
-            return View(homePageViewModel);
+            return View(new HomePageViewModel(activeLocs, activeCategories));
         }
 
         public ActionResult About()

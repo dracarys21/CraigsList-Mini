@@ -23,9 +23,9 @@ namespace DB.Database
 
         public DbSet<Location> Locations { get; set; }
 
-        public DbSet<PostType> PostType { get; set; }
+        public DbSet<PostType> PostTypes { get; set; }
 
-        public DbSet<Message> Message { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         // public DbSet<Inbox> Inbox { get; set; }
 

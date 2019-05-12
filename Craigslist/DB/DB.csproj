@@ -102,8 +102,8 @@
     <Compile Include="Database\PostFilter.cs" />
     <Compile Include="Database\PostMessages.cs" />
     <Compile Include="Database\PostTypesOps.cs" />
+    <Compile Include="Database\UserManagement.cs" />
     <Compile Include="Database\UserPost.cs" />
-    <Compile Include="Database\UserRoles.cs" />
     <Compile Include="Migrations\201905112257542_InitialCommit.cs" />
     <Compile Include="Migrations\201905112257542_InitialCommit.Designer.cs">
       <DependentUpon>201905112257542_InitialCommit.cs</DependentUpon>

@@ -17,29 +17,26 @@ namespace DB.Migrations
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
 
-
-
-            for (int i = 1; i < 11; i++)
+            for (var pId = 1; pId < 11; pId++)
             {
-                var displayId = i.ToString();
-
-                context.Locations.AddOrUpdate(new Location
+                for (var cId = 1; cId < 6; cId++)
                 {
-                    Id = i,
-                    Active = true,
-                    Area = $"Area {displayId}",
-                    Locale = $"Locale {displayId}",
-                    Slug = $"area-{displayId}_locale-{displayId}"
-                });
+                    context.Locations.AddOrUpdate(new Location
+                    {
+                        Active = true,
+                        Area = $"Area {pId}",
+                        Locale = $"Locale {cId}",
+                        Slug = $"area-{pId}_locale-{cId}"
+                    });
 
-                context.PostType.AddOrUpdate(new PostType
-                {
-                    Id = i,
-                    Active = true,
-                    Category = $"Category {displayId}",
-                    SubCategory = $"SubCategory {displayId}",
-                    Slug = $"category-{displayId}_sub-{displayId}"
-                });
+                    context.PostTypes.AddOrUpdate(new PostType
+                    {
+                        Active = true,
+                        Category = $"Category {pId}",
+                        SubCategory = $"SubCategory {cId}",
+                        Slug = $"category-{pId}_sub-{cId}"
+                    });
+                }
             }
         }
     }

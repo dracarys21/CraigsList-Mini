@@ -1,93 +1,150 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
+using Data.Models;
 using DB.Database;
 using Data.Models.Data;
 using Microsoft.AspNet.Identity;
-using Models;
-using System.Web.Security;
-using Data.Models;
 
 namespace UI.Controllers
 {
     [Authorize]
     public class PostsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
         // GET: Posts
-        public ActionResult Index()
+        public ActionResult Index(string query = "")
         {
-            string currentUserId = User.Identity.GetUserId();
-            ApplicationUser currentUser = db.Users.FirstOrDefault(x => x.Id == currentUserId);
-            return View(UserPost.GetPostsByUser(currentUser));
+            return View(UserPost.GetPostsByUserId(User.Identity.GetUserId()));
         }
 
         // GET: Posts/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Post post = db.Posts.Find(id);
+
+            var post = UserPost.GetPostById(id.Value);
+
             if (post == null)
-            {
                 return HttpNotFound();
-            }
+            
             return View(post);
         }
 
         // GET: Posts/Create
         public ActionResult Create()
         {
-            return View();
+            var locations = LocationOps.GetActiveLocationsList();
+            var postTypes = PostTypesOps.GetActivePostTypesList();
+            
+            var categories = postTypes
+                .GroupBy(p => p.Category)
+                .Select(l => l.Key)
+                .ToList();
+
+            var areas = locations
+                .GroupBy(l => l.Area)
+                .Select(l => l.Key)
+                .ToList();
+
+            var defaultArea = new SelectListItem
+            {
+                Value = "0",
+                Text = @"Please Select an Area",
+                Selected = true
+            };
+
+            return View(new PostViewModel
+            {
+                Areas = new SelectList(areas),
+                Locales = null,
+                Categories = new SelectList(categories),
+                SubCategories = null
+            });
         }
 
         // POST: Posts/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Body,Location, PostType")] Post post)
+        public ActionResult Create(PostViewModel post)
         {
-
-            if (ModelState.IsValid)
+            try
             {
-                db.Posts.Add(post);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                if (ModelState.IsValid)
+                {
+                    var something = post.SelectedCategory;
 
-            return View(post);
+//                    UserPost.CreatePost(User.Identity.GetUserId(), post.Title, post.Body,
+//                        post.SelectedCategory, post.SelectedSubCategory, post.SelectedArea,
+//                        post.SelectedLocale);
+
+                    return RedirectToAction("Index");
+                }
+
+                return View(post);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
+        #region Ajax Methods
+
+        [HttpPost]
+        public ActionResult GetSubCategoriesByCategory(string category)
+        {
+            var subCategories = PostTypesOps.GetSubCategoriesByCategory(category);
+            var subCategorySelectItems = subCategories
+                .Select(l => new SelectListItem {
+                    Value = l.Id.ToString(),
+                    Text = l.SubCategory})
+                .ToList();
+
+            var subCategorySelectList = new SelectList(subCategorySelectItems,
+                "Value", "Text");
+
+            return Json(subCategorySelectList);
+        }
+
+        [HttpPost]
+        public ActionResult GetLocalesByArea(string area)
+        {
+            var locales = LocationOps.GetLocalesByArea(area);
+            var localeSelectItems = locales
+                .Select(l => new SelectListItem {
+                    Value = l.Id.ToString(),
+                    Text = l.Locale})
+                .ToList();
+
+            var localesSelectList = new SelectList(localeSelectItems,
+                "Value", "Text");
+
+            return Json(localesSelectList);
+        }
+
+        #endregion
         // GET: Posts/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Post post = db.Posts.Find(id);
+
+            var post = UserPost.GetPostById(id.Value);
+
             if (post == null)
-            {
                 return HttpNotFound();
-            }
+            
             return View(post);
         }
 
         // POST: Posts/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Title,Body,CreateDate,LastModifiedDate,ExpirationDate,Deleted")] Post post)
+        public ActionResult Edit([Bind(Include = "Title,Body,SelectedArea,SelectedLocale,SelectedCategory,SelectedSubCategory")] Post post)
         {
             if (ModelState.IsValid)
             {
@@ -100,15 +157,14 @@ namespace UI.Controllers
         // GET: Posts/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Post post = db.Posts.Find(id);
+
+            var post = UserPost.GetPostById(id.Value);
+
             if (post == null)
-            {
                 return HttpNotFound();
-            }
+            
             return View(post);
         }
 
@@ -117,19 +173,12 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Post post = db.Posts.Find(id);
-            db.Posts.Remove(post);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+            UserPost.DeletePostByPostId(User.Identity.GetUserId(), id, out var errors);
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            if (errors.Length > 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
+
+            return RedirectToAction("Index");
         }
     }
 }

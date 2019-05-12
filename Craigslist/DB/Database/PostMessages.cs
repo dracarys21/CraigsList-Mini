@@ -2,21 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Data.Models.Data;
 using Models;
-using Microsoft.AspNet.Identity;
 using System.Data;
-using System.Data.Entity;
-using System.Net;
-using System.Web;
 using BizLogic.Logic;
 
 namespace DB.Database
 {
-    class PostMessages
+    public class PostMessages
     {
-        public void CreateMessage(Post Post, ApplicationUser CreatedBy, string Message_String)
+        public void CreateMessage(Post post, ApplicationUser createdBy, string userMessage)
         {
             try
             {
@@ -25,17 +20,14 @@ namespace DB.Database
                     
                     var message = new Message
                     {
-                        Body = Message_String,
-                        SendTo = Post.Author,
-                        CreatedBy= CreatedBy,
+                        Body = userMessage,
+                        SendTo = post.Author,
+                        CreatedBy = createdBy,
                         CreateDate = DateTime.Now,
-              
                     };
-
-                    
   
-                    Post.Messages.Add(message);
-                    db.Message.Add(message);
+                    post.Messages.Add(message);
+                    db.Messages.Add(message);
                     db.SaveChanges();
                 }
             }
@@ -47,35 +39,56 @@ namespace DB.Database
                 throw;
             }
         }
-        public List<Message> GetRecentMessagesByUser(ApplicationUser User)
+
+        public List<Message> GetRecentMessagesByUser(ApplicationUser user)
         {
             try
             {
-                List<Message> Messages = new List<Message>();
-                List<Post> posts = UserPost.GetPostsByUser(User);
-                foreach (var post in posts)
-                {
-                    foreach (var message in post.Messages)
-                    {
-                        Messages.Add(message);
-                    }
+//                List<Message> messages = new List<Message>();
+//                List<Post> posts = UserPost.GetPostsByUserId(user);
+//
+//                foreach (var post in posts)
+//                {
+//                    foreach (var message in post.Messages)
+//                    {
+//                        messages.Add(message);
+//                    }
+//
+//                }
+//                return messages.OrderByDescending(i => i.CreateDate).ToList();
 
+                using (var db = new ApplicationDbContext())
+                {
+                    var messages = from message in db.Messages
+                        where message.CreatedBy.Equals(user)
+                        orderby message.CreateDate descending
+                        select message;
+
+                    return messages.ToList();
                 }
-                return Messages.OrderByDescending(i => i.CreateDate).ToList();
             }
             catch(Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
         
-        public List<Message> GetMessageByPost(Post Post)
+        public List<Message> GetMessageByPost(Post post)
         {
             try
             {
-                return Post.Messages.OrderByDescending(i => i.CreateDate).ToList();
+                using (var db = new ApplicationDbContext())
+                {
+                    var messages = from p in db.Posts
+                        where p.Equals(post)
+                        select p.Messages;
+
+                    return messages
+                        .Select(i => i.FirstOrDefault())
+                        .OrderByDescending(i => i.CreateDate).ToList();
+                }
+//                return post.Messages.OrderByDescending(i => i.CreateDate).ToList();
             }
             catch(Exception e)
             {

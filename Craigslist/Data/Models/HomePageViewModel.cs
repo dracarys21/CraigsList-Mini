@@ -1,10 +1,6 @@
 ﻿using Data.Models.Data;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Models
 {
@@ -16,10 +12,36 @@ namespace Data.Models
 
         public Location CurrentLocation;
 
-        public HomePageViewModel(Dictionary<string, List<string>> locationList, Dictionary<string, List<string>> categoryList)
+        public HomePageViewModel(List<Location> locations, List<PostType> postTypes)
         {
-            AllCategories = categoryList;
-            AllLocations = locationList;
+            AllLocations = new Dictionary<string, List<string>>();
+            AllCategories = new Dictionary<string, List<string>>();
+
+            var categories = from postType in postTypes
+                group postType.Category by postType.Category into category
+                select category.Key;
+
+            foreach (var category in categories)
+            {
+                var subCategories = from postType in postTypes
+                    where postType.Category.Equals(category)
+                    select postType.SubCategory;
+
+                AllCategories.Add(category, subCategories.ToList());
+            }
+
+            var areas = from location in locations
+                group location.Area by location.Area into area
+                select area.Key;
+
+            foreach (var area in areas)
+            {
+                var locales = from location in locations
+                    where location.Area.Equals(area)
+                    select location.Locale;
+
+                AllLocations.Add(area, locales.ToList());
+            }
         }
     }
 }

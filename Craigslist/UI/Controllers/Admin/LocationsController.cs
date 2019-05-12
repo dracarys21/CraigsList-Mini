@@ -1,50 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
 using System.Text;
 using Microsoft.AspNet.Identity;
 
-namespace UI.Controllers
+namespace UI.Controllers.Admin
 {
     [Authorize(Roles = "Admin")]
     public class LocationsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
         // GET: Locations
         public ActionResult Index()
         {
-            return View(db.Locations.ToList());
+            return View(LocationOps.GetActiveLocationsList());
         }
 
 
-        //Get: Locales
+        //Get: Locations/{area}
         public ActionResult ListLocale(string area)
         {
-             var locales = from loc in db.Locations
-                              where loc.Area == area
-                              select loc;
+            var locales = LocationOps.GetLocalesByArea(area);
+
             return View(locales.ToList());
         }
+
         // GET: Locations/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Location location = db.Locations.Find(id);
+
+            Location location = LocationOps.GetLocationById(id.Value);
+            
             if (location == null)
-            {
                 return HttpNotFound();
-            } 
+
             return View(location);
         }
 
@@ -59,7 +51,7 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Area,Locale,Slug")] Location location)
+        public ActionResult Create([Bind(Include = "Area,Locale,Slug")] Location location)
         {
             if (ModelState.IsValid)
             {
@@ -73,15 +65,14 @@ namespace UI.Controllers
         // GET: Locations/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Location location = db.Locations.Find(id);
+
+            Location location = LocationOps.GetLocationById(id.Value);
+            
             if (location == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(location);
         }
 
@@ -90,29 +81,32 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Area,Locale,Slug")] Location location)
+        public ActionResult Edit([Bind(Include = "Area,Locale,Slug,Active")] Location location)
         {
             if (ModelState.IsValid)
             {
-                string userid = User.Identity.GetUserId();
-                LocationOps.UpdateLocation(UserRoles.GetCurrentUser(userid),location, out StringBuilder errors);
-                return RedirectToAction("ListLocale");
+                LocationOps.UpdateLocation(location, out StringBuilder errors);
+
+                if (errors.Length > 0)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
+
+                return RedirectToAction("ListLocale", routeValues: new { area = location.Area });
             }
-            return View(location);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Location Data");
         }
 
         // GET: Locations/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Location location = db.Locations.Find(id);
+
+            var location = LocationOps.GetLocationById(id.Value);
+
             if (location == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(location);
         }
 
@@ -121,18 +115,12 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            string userid = User.Identity.GetUserId();
-            LocationOps.DeleteLocationById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
-            return RedirectToAction("Index");
-        }
+            LocationOps.DeleteLocationById(id, out StringBuilder errors);
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            if (errors.Length > 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
+
+            return RedirectToAction("Index");
         }
     }
 }

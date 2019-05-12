@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using Data.Models.Data;
-using Models;
 
 namespace Data.Models
 {
@@ -16,40 +15,21 @@ namespace Data.Models
         [MinLength(3)]
         public string Body { get; set; }
 
-        private DateTime CreateDate { get; set; }
-
-        private DateTime LastModifiedDate { get; set; }
-
-        private DateTime? ExpirationDate { get; set; }
-
-        private ApplicationUser Author { get; set; }
-
-        private ApplicationUser LastModifiedBy { get; set; }
-
-        public Location Location { get; set; }
-
-        public PostType PostType { get; set; }
-
-        [Required]
         public string SelectedArea { get; set; }
 
-        public List<string> Areas { get; set; }
-
-
-        [Required]
         public string SelectedLocale { get; set; }
         
-        public List<string> Locales { get; set; }
-        
-        [Required]
         public string SelectedCategory { get; set; }
-        
-        public List<string> Categories { get; set; }
-        
-        [Required]
+
         public string SelectedSubCategory { get; set; }
+
+        public SelectList Areas { get; set; }
+
+        public SelectList Locales { get; set; }
         
-        public List<string> SubCategories { get; set; }
+        public SelectList Categories { get; set; }
+        
+        public SelectList SubCategories { get; set; }
 
     }
 }
