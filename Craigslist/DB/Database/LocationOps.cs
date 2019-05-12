@@ -59,9 +59,10 @@ namespace DB.Database
             using (var db = new ApplicationDbContext())
             {
                 var pt = from p in db.Locations
-                         select p;
-                return pt.GroupBy(p => p.Area).Select(p => p.FirstOrDefault()).ToList();
-
+                         where p.Active == true
+                         select p ;
+               var r = pt.GroupBy(p => p.Area).Select(p => p.FirstOrDefault()).ToList();
+                return r;
             }
         }
         public static ICollection<Location> GetLocalesByArea(string area)
@@ -71,7 +72,7 @@ namespace DB.Database
                 using(var db =  new ApplicationDbContext())
                 {
                     var locales = from loc in db.Locations
-                                  where loc.Area == area
+                                  where loc.Area == area && loc.Active
                                   select loc;
                     return locales.ToList();
                 }
@@ -106,6 +107,7 @@ namespace DB.Database
 
                     Location loccation = GetLocationById(locationId);
                     location.Active = false;
+                    db.Locations.AddOrUpdate(location);
                     db.SaveChanges();
                 }
             }
@@ -116,7 +118,38 @@ namespace DB.Database
             }
         }
 
-        public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
+        public static void DeleteLocationByArea(string area, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var location = GetLocalesByArea(area);
+
+                    if (location == null)
+                    {
+                        errors.Append("Location does not exist\n");
+                        return;
+                    }
+
+                    foreach(var l in location)
+                    {
+                        l.Active = false;
+                        db.Locations.AddOrUpdate(l);
+                    }
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+
+            }
+
+        }
+            public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
@@ -139,7 +172,7 @@ namespace DB.Database
                         return;
                     }
 
-                    fetchedLocation.Active = location.Active;
+    
                     fetchedLocation.Slug = location.Slug;
                     fetchedLocation.Area = location.Area;
                     fetchedLocation.Locale = location.Locale;

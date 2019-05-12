@@ -92,8 +92,8 @@ namespace UI.Controllers
             if (ModelState.IsValid)
             {
                 string userid = User.Identity.GetUserId();
-                LocationOps.UpdateLocation(UserRoles.GetCurrentUser(userid),location, out StringBuilder errors);
-                return RedirectToAction("ListLocale");
+                LocationOps.UpdateLocation(UserRoles.GetUserById(userid),location, out StringBuilder errors);
+                return RedirectToAction("ListLocale",new {area = location.Area });
             }
             return View(location);
         }
@@ -119,7 +119,34 @@ namespace UI.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             string userid = User.Identity.GetUserId();
-            LocationOps.DeleteLocationById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
+            LocationOps.DeleteLocationById(UserRoles.GetUserById(userid), id, out StringBuilder error);
+            return RedirectToAction("Index");
+        }
+
+
+        public ActionResult DeleteArea(string area )
+        {
+            if (area == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Location location = LocationOps.GetLocalesByArea(area).FirstOrDefault();
+            if (location == null)
+            {
+                return HttpNotFound();
+            }
+            DeleteAreaOrCategoryViewModel v = new DeleteAreaOrCategoryViewModel();
+            v.Upper = location.Area;
+            return View(v);
+        }
+
+        // POST: Locations/Delete/5
+        [HttpPost, ActionName("DeleteArea")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAreaConfirmed(string area)
+        {
+            string userid = User.Identity.GetUserId();
+            LocationOps.DeleteLocationByArea(area, out StringBuilder error);
             return RedirectToAction("Index");
         }
     }

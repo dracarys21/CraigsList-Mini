@@ -247,7 +247,6 @@
     <Content Include="Views\Posts\Index.cshtml" />
     <Content Include="Views\Posts\Create.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Admin\ChangeUserToAdmin.cshtml" />
     <Content Include="Views\Locations\Create.cshtml" />
     <Content Include="Views\Locations\Delete.cshtml" />
     <Content Include="Views\Locations\Details.cshtml" />
@@ -260,6 +259,11 @@
     <Content Include="Views\PostTypes\Edit.cshtml" />
     <Content Include="Views\PostTypes\Index.cshtml" />
     <Content Include="Views\PostTypes\ListSubCategories.cshtml" />
+    <Content Include="Views\Admin\UserPosts.cshtml" />
+    <Content Include="Views\Admin\DisplayUsers.cshtml" />
+    <Content Include="Views\Admin\ChangeUserToAdmin.cshtml" />
+    <Content Include="Views\Locations\DeleteArea.cshtml" />
+    <Content Include="Views\PostTypes\DeleteCategory.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

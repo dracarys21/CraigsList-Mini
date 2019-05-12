@@ -40,6 +40,7 @@ namespace DB.Database
             using (var db = new ApplicationDbContext())
             {
                 var pt = from p in db.PostType
+                         where p.Active == true
                          select p;
                 return pt.GroupBy(p => p.Category).Select(p => p.FirstOrDefault()).ToList();
                         
@@ -62,6 +63,39 @@ namespace DB.Database
             }
         }
 
+        public static void DeletePostTypeByCategory(string category, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var postTypes = GetPostTypesByCategory(category);
+
+                    if (postTypes == null)
+                    {
+                        errors.Append("Location does not exist\n");
+                        return;
+                    }
+
+                    foreach (var l in postTypes)
+                    {
+                        l.Active = false;
+                        db.PostType.AddOrUpdate(l);
+                    }
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+
+            }
+
+        }
+
+
         public static ICollection<PostType> GetPostTypesByCategory(string category)
         {
             try
@@ -69,7 +103,7 @@ namespace DB.Database
                 using (var db = new ApplicationDbContext())
                 {
                     var locales = from loc in db.PostType
-                                  where loc.Category == category
+                                  where loc.Category == category && loc.Active
                                   select loc;
                     return locales.ToList();
                 }
@@ -104,6 +138,7 @@ namespace DB.Database
 
                     PostType Postype = GetPostTypesById(postTypeId);
                    Postype.Active = false;
+                    db.PostType.AddOrUpdate(Postype);
                     db.SaveChanges();
                 }
             }
@@ -137,7 +172,6 @@ namespace DB.Database
                         return;
                     }
 
-                    fetchedPostType.Active = postType.Active;
                     fetchedPostType.Slug = postType.Slug;
                     fetchedPostType.Category = postType.Category;
                     fetchedPostType.SubCategory = postType.SubCategory;

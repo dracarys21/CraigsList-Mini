@@ -84,13 +84,13 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Category,SubCategory,Slug,Active")] PostType postType)
+        public ActionResult Edit([Bind(Include = "Id,Category,SubCategory,Slug")] PostType postType)
         {
             if (ModelState.IsValid)
             {
                 string userid = User.Identity.GetUserId();
-                PostTypesOps.UpdatePostTypes(UserRoles.GetCurrentUser(userid), postType, out StringBuilder errors);
-                return RedirectToAction("Index");
+                PostTypesOps.UpdatePostTypes(UserRoles.GetUserById(userid), postType, out StringBuilder errors);
+                return RedirectToAction("ListSubCategories", new {category =  postType.Category});
             }
             return View(postType);
         }
@@ -116,8 +116,35 @@ namespace UI.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             string userid = User.Identity.GetUserId();
-            PostTypesOps.DeletePostTypeById(UserRoles.GetCurrentUser(userid), id, out StringBuilder error);
+            PostTypesOps.DeletePostTypeById(UserRoles.GetUserById(userid), id, out StringBuilder error);
 
+            return RedirectToAction("Index");
+        }
+
+
+        public ActionResult DeleteCategory(string category)
+        {
+            if (category == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            PostType postType = PostTypesOps.GetPostTypesByCategory(category).FirstOrDefault();
+            if (postType == null)
+            {
+                return HttpNotFound();
+            }
+            DeleteAreaOrCategoryViewModel v = new DeleteAreaOrCategoryViewModel();
+            v.Upper = postType.Category;
+            return View(v);
+        }
+
+        // POST: Locations/Delete/5
+        [HttpPost, ActionName("DeleteCategory")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCategoryConfirmed(string category)
+        {
+            string userid = User.Identity.GetUserId();
+            PostTypesOps.DeletePostTypeByCategory(category, out StringBuilder error);
             return RedirectToAction("Index");
         }
     }

@@ -24,6 +24,7 @@
         </td>
         <td>
             @Html.ActionLink("List Sub Categories", "ListSubCategories", new { category = item.Category }) |
+            @Html.ActionLink("Delete Category", "DeleteCategory", new { category = item.Category })
         </td>
     </tr>
 }
