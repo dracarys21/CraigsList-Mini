@@ -14,12 +14,6 @@
         <th>
             @Html.DisplayNameFor(model => model.Category)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SubCategory)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Slug)
-        </th>
         <th></th>
     </tr>
 
@@ -27,12 +21,6 @@
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Category)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SubCategory)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Slug)
         </td>
         <td>
             @Html.ActionLink("List Sub Categories", "ListSubCategories", new { category = item.Category }) |
