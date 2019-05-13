@@ -10,16 +10,17 @@ namespace Data.Models
 {
     public class HomePageViewModel
     {
-        public Dictionary<string, List<string>> AllLocations;
+        public Dictionary<string, List<Location>> AllLocations;
 
-        public Dictionary<string, List<string>> AllCategories;
+        public Dictionary<string, List<PostType>> AllCategories;
 
         public Location CurrentLocation;
 
-        public HomePageViewModel(Dictionary<string, List<string>> locationList, Dictionary<string, List<string>> categoryList)
+        public HomePageViewModel(Dictionary<string, List<Location>> locationList, Dictionary<string, List<PostType>> categoryList)
         {
             AllCategories = categoryList;
             AllLocations = locationList;
+            CurrentLocation = locationList.Values.First().First();
         }
     }
 }

@@ -51,36 +51,19 @@ namespace DB.Database
             }
         }
 
-        public static Dictionary<string, List<string>> GetAllPostTypes()
+
+        public static Dictionary<string, List<PostType>> GetAllPostTypes()
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    var allPostTypes = from postType in db.PostType
-                                       where postType.Active == true
-                                       select new
-                                       {
-                                           category = postType.Category,
-                                           subcategory = postType.SubCategory
-                                       };
+                    var allPostTypes = from type in db.PostType
+                                       where type.Active == true
+                                       select type;
 
-                    var categoryGroup = from postType in allPostTypes
-                                        group postType by postType.category into newGroup
-                                        select newGroup;
-
-                    Dictionary<string, List<string>> ActivePostTypes = new Dictionary<string, List<string>>();
-                    foreach (var category in categoryGroup)
-                    {
-                        string categoryName = category.Key;
-                        List<string> subcategories = new List<string>();
-                        foreach (var sub in category)
-                        {
-                            subcategories.Add(sub.subcategory);
-                        }
-                        ActivePostTypes.Add(categoryName, subcategories);
-                    }
-                    return ActivePostTypes;
+                    Dictionary<string, List<PostType>> ActiveLocations = allPostTypes.GroupBy(x => x.Category).ToDictionary(x => x.Key, x => x.ToList());
+                    return ActiveLocations;
                 }
             }
             catch (Exception e)
