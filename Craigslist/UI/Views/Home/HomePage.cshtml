@@ -35,6 +35,8 @@
                 <div class="container col-sm-10 border border-info" style="background-color: gainsboro; padding-left:2%; padding-right:2%;" >
                     <div class="col-sm-3">
                         <h3 class="text-primary" style="font-style: initial">
+                            @Html.ActionLink(Model.CurrentLocation.Area, "SetCookies", new { cookieName = "location", value = Model.CurrentLocation.Area + "|" })
+
                             @Html.Label(Model.CurrentLocation.Area)
                         </h3>
                     </div>
@@ -43,7 +45,7 @@
                         @foreach (Location loc in Model.AllLocations[Model.CurrentLocation.Area])
                         {
                             <div style="display:inline-block;">
-                                <a href="#" class="badge bg-light text-primary border border-primary" style="height: 100%;">
+                                <a href="@Url.Action("SetCookies",new {cookieName = "location" , value = Model.CurrentLocation.Area+"|"+loc.Locale})" class="badge bg-light text-primary border border-primary" style="height: 100%;">
                                     @loc.Locale
                                 </a>
                             </div>
@@ -58,7 +60,7 @@
                 <div class="col-sm-4">
                     <div class="card border-info mb-3" style="max-width: 18rem; margin: 10px; height: 200px; background-color: lightgray;">
                         <div class="card-header text-center" style="background-color: gainsboro; font-size: 20px;">
-                            @Html.ActionLink(keyValuePair.Key, "")
+                            @Html.ActionLink(keyValuePair.Key, "SetCookies", new { cookieName = "post_type", value = keyValuePair.Key + "|" })
                         </div>
                         <div class="pre-scrollable" style="overflow-y: auto; margin-bottom: 0px;">
                             <div class="card-body" style="padding-left:0px; padding-right:0px; padding-top:0px;">
@@ -66,7 +68,7 @@
                                     @foreach (PostType subcategory in keyValuePair.Value)
                                     {
                                         <li class="list-group-item list-group-item-secondary text-center">
-                                            @Html.ActionLink(subcategory.SubCategory, "", "")
+                                            @Html.ActionLink(subcategory.SubCategory, "SetCookies", new { cookieName = "post_type", value = keyValuePair.Key + "|" + subcategory.SubCategory })
                                         </li>
                                     }
                                 </ul>

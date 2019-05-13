@@ -28,6 +28,26 @@ namespace UI.Controllers
             return View(homePageViewModel);
         }
 
+        public ActionResult SetCookies(string cookieName, string value)
+        {
+            HttpCookie cookie = null;
+            if (Request.Cookies[cookieName] != null)
+            {
+                Request.Cookies[cookieName].Value = value;
+                cookie = Request.Cookies[cookieName];
+            }
+            else
+            {
+                cookie = new HttpCookie(cookieName)
+                {
+                    Value = value
+                };
+            }
+
+            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+            return RedirectToAction("Index");
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
