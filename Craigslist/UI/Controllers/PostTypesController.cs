@@ -1,121 +1,114 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
 using System.Text;
-using Microsoft.AspNet.Identity;
 
-namespace UI.Controllers.Admin
+namespace UI.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class LocationsController : Controller
+    public class PostTypesController : Controller
     {
-        // GET: Locations
+        // GET: PostTypes
         public ActionResult Index()
         {
-            return View(LocationOps.GetActiveLocationsList());
+            return View(PostTypesOps.GetActivePostTypesList());
         }
 
-
-        //Get: Locations/{area}
-        public ActionResult ListLocale(string area)
+        public ActionResult ListSubCategories(string category)
         {
-            var locales = LocationOps.GetLocalesByArea(area);
-
-            return View(locales.ToList());
+            return View(PostTypesOps.GetSubCategoriesByCategory(category));
         }
-
-        // GET: Locations/Details/5
+        // GET: PostTypes/Details/5
         public ActionResult Details(int? id)
         {
             if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Location location = LocationOps.GetLocationById(id.Value);
-            
-            if (location == null)
+            PostType postType = PostTypesOps.GetPostTypesById(id.Value);
+
+            if (postType == null)
                 return HttpNotFound();
 
-            return View(location);
+            return View(postType);
         }
 
-        // GET: Locations/Create
+        // GET: PostTypes/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Locations/Create
+        // POST: PostTypes/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Area,Locale,Slug")] Location location)
+        public ActionResult Create([Bind(Include = "Category,SubCategory,Slug")] PostType postType)
         {
             if (ModelState.IsValid)
             {
-                LocationOps.CreateLocation(location.Area, location.Locale, location.Slug);
+                PostTypesOps.CreatePostTypes(postType.Category, postType.SubCategory, postType.Slug);
+
                 return RedirectToAction("Index");
             }
 
-            return View(location);
+            return View(postType);
         }
 
-        // GET: Locations/Edit/5
+        // GET: PostTypes/Edit/5
         public ActionResult Edit(int? id)
         {
             if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Location location = LocationOps.GetLocationById(id.Value);
-            
-            if (location == null)
+            PostType postType = PostTypesOps.GetPostTypesById(id.Value);
+
+            if (postType == null)
                 return HttpNotFound();
 
-            return View(location);
+            return View(postType);
         }
 
-        // POST: Locations/Edit/5
+        // POST: PostTypes/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Area,Locale,Slug,Active")] Location location)
+        public ActionResult Edit([Bind(Include = "Category,SubCategory,Slug,Active")] PostType postType)
         {
             if (ModelState.IsValid)
             {
-                LocationOps.UpdateLocation(location, out StringBuilder errors);
+                PostTypesOps.UpdatePostType(postType, out StringBuilder errors);
 
                 if (errors.Length > 0)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
 
-                return RedirectToAction("ListLocale", routeValues: new { area = location.Area });
+                return RedirectToAction("Index");
             }
-
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Invalid Location Data");
+            return View(postType);
         }
 
-        // GET: Locations/Delete/5
+        // GET: PostTypes/Delete/5
         public ActionResult Delete(int? id)
         {
             if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var location = LocationOps.GetLocationById(id.Value);
+            PostType postType = PostTypesOps.GetPostTypesById(id.Value);
 
-            if (location == null)
+            if (postType == null)
                 return HttpNotFound();
 
-            return View(location);
+            return View(postType);
         }
 
-        // POST: Locations/Delete/5
+        // POST: PostTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            LocationOps.DeleteLocationById(id, out StringBuilder errors);
+            PostTypesOps.DeletePostTypeById(id, out StringBuilder errors);
 
             if (errors.Length > 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());

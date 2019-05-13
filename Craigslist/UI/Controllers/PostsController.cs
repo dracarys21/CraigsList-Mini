@@ -151,11 +151,15 @@ namespace UI.Controllers
         // POST: Posts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Title,Body,SelectedArea,SelectedLocale,SelectedCategory,SelectedSubcategory")] Post post)
+        public ActionResult Edit(int id, [Bind(Include = "Title,Body")] PostViewModel post)
         {
             if (ModelState.IsValid)
             {
-                
+                UserPost.UpdatePost(User.Identity.GetUserId(), id, post.Title, post.Body, out var errors);
+
+                if (errors.Length > 0)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
+                    
                 return RedirectToAction("Index");
             }
             return View(post);

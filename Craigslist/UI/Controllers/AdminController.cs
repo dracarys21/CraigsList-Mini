@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using DB.Database;
 
-namespace UI.Controllers.Admin
+namespace UI.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller

@@ -122,8 +122,22 @@ namespace DB.Database
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    return db.Posts.Find(postId);
+                    var post = db.Posts
+                        .Include("Author")
+                        .FirstOrDefault(p => p.Id.Equals(postId)
+                                             && !p.Deleted);
+
+                    if (post != null)
+                    {
+                        if (post.ExpirationDate.HasValue
+                            && post.ExpirationDate.Value.CompareTo(DateTime.Now.Date) > 0)
+                        {
+                            return post;
+                        }
+                    }
                 }
+
+                return null;
             }
             catch (Exception e)
             {
@@ -132,37 +146,36 @@ namespace DB.Database
             }
         }
 
-        public static void UpdatePost(ApplicationUser user, Post post, out StringBuilder errors)
+        public static void UpdatePost(string userId, int postId,
+            string title, string body, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
-                if (!PostActions.CanUpdatePost(user, post))
-                {
-                    errors.Append("Post CANNOT be updated");
-                    return;
-                }
-
                 using (var db = new ApplicationDbContext())
                 {
-                    var postFromDb = GetPostById(post.Id);
+                    var post = GetPostById(postId);
+                    var updateBy = db.Users.Find(userId);
 
-                    if (postFromDb == null)
+                    if (!PostActions.CanUpdatePost(updateBy, post))
+                    {
+                        errors.Append("Post CANNOT be updated");
+                        return;
+                    }
+
+                    if (post == null)
                     {
                         errors.Append("Post could not be updated. Please try again later");
                         return;
                     }
 
-                    postFromDb.Body = post.Body;
-                    postFromDb.Title = post.Title;
-                    postFromDb.ExpirationDate = post.ExpirationDate;
-                    postFromDb.Location = post.Location;
-                    postFromDb.PostType = post.PostType;
-                    postFromDb.LastModifiedBy = user;
-                    postFromDb.LastModifiedDate = DateTime.Now;
+                    post.Body = body;
+                    post.Title = title;
+                    post.LastModifiedBy = updateBy;
+                    post.LastModifiedDate = DateTime.Now;
 
-                    db.Posts.AddOrUpdate(postFromDb);
+                    db.Posts.AddOrUpdate(post);
                     db.SaveChanges();
                 }
             }

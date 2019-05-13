@@ -30,7 +30,7 @@ namespace BizLogic.Logic
 
         public static bool CanUpdatePost(ApplicationUser user, Post post)
         {
-            var isOwner = post.Author.Equals(user);
+            var isOwner = post.Author.Id.Equals(user.Id);
             var isPostExpiredOrDeleted = post.Deleted
                 || (post.ExpirationDate.HasValue && post.ExpirationDate < DateTime.Now);
 
