@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Data.Models;
 using DB.Database;
 using Data.Models.Data;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
@@ -39,28 +40,31 @@ namespace UI.Controllers
             var locations = LocationOps.GetActiveLocationsList();
             var postTypes = PostTypesOps.GetActivePostTypesList();
             
-            var categories = postTypes
+            var categories = new List<string>
+            {
+                "Please Select a Category"
+            };
+
+            categories.AddRange(postTypes
                 .GroupBy(p => p.Category)
                 .Select(l => l.Key)
-                .ToList();
+                .ToList());
 
-            var areas = locations
+            var areas = new List<string>
+            {
+                "Please Select an Area"
+            };
+
+            areas.AddRange(locations
                 .GroupBy(l => l.Area)
                 .Select(l => l.Key)
-                .ToList();
-
-            var defaultArea = new SelectListItem
-            {
-                Value = "0",
-                Text = @"Please Select an Area",
-                Selected = true
-            };
+                .ToList());
 
             return View(new PostViewModel
             {
-                Areas = new SelectList(areas),
+                Areas = new SelectList(areas, "Please Select an Area"),
                 Locales = null,
-                Categories = new SelectList(categories),
+                Categories = new SelectList(categories, "Please Select a Category"),
                 SubCategories = null
             });
         }
@@ -68,17 +72,20 @@ namespace UI.Controllers
         // POST: Posts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(PostViewModel post)
+        public ActionResult Create(
+            [Bind(Include = "Title,Body,SelectedArea,SelectedLocale,SelectedCategory,SelectedSubcategory")]
+            PostViewModel post)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var something = post.SelectedCategory;
+                    var postType = PostTypesOps.GetPostTypesById(int.Parse(post.SelectedSubcategory));
+                    var location = LocationOps.GetLocationById(int.Parse(post.SelectedLocale));
 
-//                    UserPost.CreatePost(User.Identity.GetUserId(), post.Title, post.Body,
-//                        post.SelectedCategory, post.SelectedSubCategory, post.SelectedArea,
-//                        post.SelectedLocale);
+                    UserPost.CreatePost(User.Identity.GetUserId(), post.Title, post.Body,
+                        post.SelectedCategory, postType.SubCategory, post.SelectedArea,
+                        location.Locale);
 
                     return RedirectToAction("Index");
                 }
@@ -144,7 +151,7 @@ namespace UI.Controllers
         // POST: Posts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Title,Body,SelectedArea,SelectedLocale,SelectedCategory,SelectedSubCategory")] Post post)
+        public ActionResult Edit([Bind(Include = "Title,Body,SelectedArea,SelectedLocale,SelectedCategory,SelectedSubcategory")] Post post)
         {
             if (ModelState.IsValid)
             {

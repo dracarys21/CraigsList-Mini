@@ -21,7 +21,7 @@ namespace Data.Models
         
         public string SelectedCategory { get; set; }
 
-        public string SelectedSubCategory { get; set; }
+        public string SelectedSubcategory { get; set; }
 
         public SelectList Areas { get; set; }
 

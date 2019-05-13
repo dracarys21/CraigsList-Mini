@@ -48,15 +48,15 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Locales, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <select id="ddllocales" name="ddllocales" class="form-control"></select>
+                <select id="SelectedLocale" name="SelectedLocale" class="form-control"></select>
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Categories,
-                    new SelectList(Model.Categories, "Value", "Text"),
+                @Html.DropDownListFor(model => model.SelectedCategory,
+                    Model.Categories,
                     new { @class = "form-control",
                         @id = "ddlcategories", 
                         @onchange = "javascript:GetSubCategories(this.value);"
@@ -67,7 +67,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.SubCategories, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                <select id="ddlsubcategory" name="ddlsubcategory" class="form-control">
+                <select id="SelectedSubcategory" name="SelectedSubcategory" class="form-control">
                 </select>
             </div>
         </div>
@@ -90,7 +90,7 @@
     <script language="javascript" type="text/javascript">
         function GetSubCategories(_category) {
             var procemessage = "<option value='0'> Please wait...</option>";
-            $("#ddlsubcategory").html(procemessage).show();
+            $("#SelectedSubcategory").html(procemessage).show();
             var url = "@Url.Action("GetSubCategoriesByCategory", "Posts")";
 
             $.ajax({
@@ -103,7 +103,7 @@
                     for (var x = 0; x < data.length; x++) {
                         markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
                     }
-                    $("#ddlsubcategory").html(markup).show();
+                    $("#SelectedSubcategory").html(markup).show();
                 },
                 error: function (reponse) {
                     alert("error : " + reponse);
@@ -113,7 +113,7 @@
 
         function GetLocales(_area) {
             var procemessage = "<option value='0'> Please wait...</option>";
-            $("#ddllocales").html(procemessage).show();
+            $("#SelectedLocale").html(procemessage).show();
             var url = "@Url.Action("GetLocalesByArea", "Posts")";
 
             $.ajax({
@@ -126,7 +126,7 @@
                     for (var x = 0; x < data.length; x++) {
                         markup += "<option value=" + data[x].Value + ">" + data[x].Text + "</option>";
                     }
-                    $("#ddllocales").html(markup).show();
+                    $("#SelectedLocale").html(markup).show();
                 },
                 error: function (reponse) {
                     alert("error : " + reponse);
