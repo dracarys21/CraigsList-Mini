@@ -264,6 +264,7 @@
     <Content Include="Views\Admin\ChangeUserToAdmin.cshtml" />
     <Content Include="Views\Locations\DeleteArea.cshtml" />
     <Content Include="Views\PostTypes\DeleteCategory.cshtml" />
+    <Content Include="Views\Home\HomePage.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

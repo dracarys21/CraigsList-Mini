@@ -84,8 +84,6 @@ namespace UI.Controllers
             {
                 case SignInStatus.Success:
                     {
-                        Response.Cookies["Location"]["Area"] = "New York";
-                        Response.Cookies["Location"]["Locale"] = "Manhattan";
                         string role = UserRoles.GetUserRole(model.Email);
                         if (role == "Admin")
                             return RedirectToAction("Index", "Admin");
