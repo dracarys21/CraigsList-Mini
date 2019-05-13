@@ -60,11 +60,33 @@ namespace DB.Database
             {
                 var pt = from p in db.Locations
                          where p.Active == true
-                         select p ;
-               var r = pt.GroupBy(p => p.Area).Select(p => p.FirstOrDefault()).ToList();
+                         select p;
+                var r = pt.GroupBy(p => p.Area).Select(p => p.FirstOrDefault()).ToList();
                 return r;
             }
         }
+
+        public static Dictionary<string, List<Location>> GetAllLocations()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allLocations = from loc in db.Locations
+                                       where loc.Active == true
+                                       select loc;
+
+                    Dictionary<string, List<Location>> ActiveLocations = allLocations.GroupBy(x => x.Area).ToDictionary(x => x.Key, x => x.ToList());
+                    return ActiveLocations;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         public static ICollection<Location> GetLocalesByArea(string area)
         {
             try

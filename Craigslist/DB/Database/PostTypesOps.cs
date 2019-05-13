@@ -95,6 +95,26 @@ namespace DB.Database
 
         }
 
+        public static Dictionary<string, List<PostType>> GetAllPostTypes()
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var allPostTypes = from type in db.PostType
+                                       where type.Active == true
+                                       select type;
+
+                    Dictionary<string, List<PostType>> ActiveLocations = allPostTypes.GroupBy(x => x.Category).ToDictionary(x => x.Key, x => x.ToList());
+                    return ActiveLocations;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
 
         public static ICollection<PostType> GetPostTypesByCategory(string category)
         {
