@@ -218,8 +218,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -264,7 +262,6 @@
     <Content Include="Views\Admin\ChangeUserToAdmin.cshtml" />
     <Content Include="Views\Locations\DeleteArea.cshtml" />
     <Content Include="Views\PostTypes\DeleteCategory.cshtml" />
-    <Content Include="Views\Home\HomePage.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
