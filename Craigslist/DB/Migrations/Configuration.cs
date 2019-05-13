@@ -1,3 +1,5 @@
+using System;
+
 namespace DB.Migrations
 {
     using System.Data.Entity.Migrations;
@@ -36,8 +38,15 @@ namespace DB.Migrations
                         SubCategory = $"SubCategory {cId}",
                         Slug = $"category-{pId}_sub-{cId}"
                     });
+
+                    var user = context.Users.Find("c055ac54-b117-4785-bf89-9d6ca98f6d2d");
+
+                    
+   
                 }
             }
+
+
         }
     }
 }

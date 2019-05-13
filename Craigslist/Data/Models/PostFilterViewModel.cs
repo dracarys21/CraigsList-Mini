@@ -1,7 +1,4 @@
-﻿using System;
-using Data.Models.Data;
-
-namespace Data.Models
+﻿namespace Data.Models
 {
     public class PostFilterViewModel
     {
@@ -13,18 +10,12 @@ namespace Data.Models
 
         public string CreateDate { get; set; }
 
-        public Location Location { get; set; }
+        public string Area { get; set; }
 
-        public PostType PostType { get; set; }
+        public string Locale { get; set; }
 
-        public PostFilterViewModel(Post post)
-        {
-            Id = post.Id;
-            Title = post.Title;
-            Body = post.Body;
-            CreateDate = post.CreateDate.ToShortDateString();
-            Location = post.Location;
-            PostType = post.PostType;
-        }
+        public string Category { get; set; }
+
+        public string Subcategory { get; set; }
     }
 }

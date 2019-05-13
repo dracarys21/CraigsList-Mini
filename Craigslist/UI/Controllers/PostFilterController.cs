@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data.Models;
@@ -7,6 +9,7 @@ using DB.Database;
 
 namespace UI.Controllers
 {
+    [AllowAnonymous]
     public class PostFilterController : Controller
     {
         public Location Location
@@ -26,8 +29,6 @@ namespace UI.Controllers
                 {
                     // TODO: Remove this. The cookie should be set from the home page
                     var cookie = new HttpCookie("location");
-//                    area = "New York";
-//                    locale = "brooklyn";
                     area = string.Empty;
                     locale = string.Empty;
 
@@ -64,8 +65,6 @@ namespace UI.Controllers
                 {
                     // TODO: Remove this. The cookie should be set from the home page
                     var cookie = new HttpCookie("post_type");
-//                    category = "Housing";
-//                    subcategory = "apartments";
                     category = string.Empty;
                     subcategory = string.Empty;
 
@@ -87,24 +86,74 @@ namespace UI.Controllers
 
         // GET: PostFilter
         [HttpGet]
-        public List<PostFilterViewModel> Filter(string query = "")
+        public ActionResult Index(string pNo = "1", string pAction = "", string query = "")
         {
+            var pageNo = int.Parse(pNo);
+
+            if (pAction.Equals("next"))
+                pageNo++;
+
+            if (pAction.Equals("prev"))
+                pageNo--;
+
+            if (pageNo < 1)
+                pageNo = 1;
+
             // Cache all values
             var location = Location;
             var postType = PostType;
 
-            var posts = PostFilter.FilterPost(location.Area, location.Locale,
-                postType.Category, postType.SubCategory, query);
+            var posts = PostFilter.FilterPost(location.Area,
+                location.Locale, postType.Category, postType.SubCategory, query);
 
-            var postViewModels = new List<PostFilterViewModel>();
+            var filteredPosts = posts
+                .Select(p => new PostFilterViewModel
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Body = p.Body,
+                    Area = p.Location.Area,
+                    Locale = p.Location.Locale,
+                    Category = p.PostType.Category,
+                    Subcategory = p.PostType.SubCategory,
+                    CreateDate = p.CreateDate.ToString("MMM dd")
+                }).ToList();
 
-            foreach (var post in posts)
+            
+            var pageSize = 5;
+            ViewBag.PageCount = Math.Ceiling(filteredPosts.Count * 1.0 / pageSize);
+            ViewBag.CurrentPage = pageNo;
+
+            if (pageNo > ViewBag.PageCount)
+                pageNo = ViewBag.PageCount + 1;
+
+            var pagedPosts = filteredPosts.Skip((pageNo - 1) * pageSize).Take(pageSize);
+
+            return View(pagedPosts.ToList());
+        }
+
+        // TODO: Remove this. The cookie should be set from the home page
+        [HttpGet]
+        public ActionResult SetCookie(string cookieName, string value)
+        {
+            HttpCookie cookie = null;
+
+            if (Request.Cookies[cookieName] != null)
             {
-                postViewModels.Add(new PostFilterViewModel(post));
+                Request.Cookies[cookieName].Value = value;
+                cookie = Request.Cookies[cookieName];
             }
+            else
+            {
+                cookie = new HttpCookie(cookieName)
+                {
+                    Value = value
+                };
+            }
+            
+            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
 
-
-            return postViewModels;
+            return RedirectToAction("Index");
         }
     }
 }

@@ -12,9 +12,11 @@ namespace DB.Database
         {
             using (var db = new ApplicationDbContext())
             {
-                var posts = db.Posts.ToList();
+                var posts = db.Posts
+                    .Include("Location")
+                    .Include("PostType");
 
-                var filteredPosts = PostActions.FilterPost(db.Posts, area,
+                var filteredPosts = PostActions.FilterPost(posts, area,
                     locale, category, subCategory, query);
 
                 return filteredPosts.ToList();
