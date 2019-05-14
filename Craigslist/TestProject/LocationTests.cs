@@ -33,7 +33,7 @@ namespace TestProject
             var location = GetDummyLocation();
             location.Area = null;
             ApplicationUser user = new ApplicationUser();
-            user.UserRole = "admin";
+//            user.UserRole = "admin";
             Assert.IsFalse(LocationActions.CanCRUDLocation(user, location));
         }
 
@@ -43,7 +43,7 @@ namespace TestProject
             var location = GetDummyLocation();
             location.Locale = null;
             ApplicationUser user = new ApplicationUser();
-            user.UserRole = "admin";
+//            user.UserRole = "admin";
             Assert.IsFalse(LocationActions.CanCRUDLocation(user, location));
         }
 
@@ -53,7 +53,7 @@ namespace TestProject
             var location = GetDummyLocation();
             location.Slug = null;
             ApplicationUser user = new ApplicationUser();
-            user.UserRole = "admin";
+//            user.UserRole = "admin";
             Assert.IsFalse(LocationActions.CanCRUDLocation(user, location));
         }
 
@@ -63,7 +63,7 @@ namespace TestProject
             var location = GetDummyLocation();
             location.Slug = "!@#$%^&*()";
             ApplicationUser user = new ApplicationUser();
-            user.UserRole = "admin";
+//            user.UserRole = "admin";
             Assert.IsFalse(LocationActions.CanCRUDLocation(user, location));
         }
 
@@ -72,7 +72,7 @@ namespace TestProject
         {
             var location = GetDummyLocation();
             ApplicationUser user = new ApplicationUser();
-            user.UserRole = "user";
+//            user.UserRole = "user";
             Assert.IsFalse(LocationActions.CanCRUDLocation(user, location));
         }
 
