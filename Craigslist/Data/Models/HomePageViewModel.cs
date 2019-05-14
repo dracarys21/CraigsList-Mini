@@ -14,13 +14,13 @@ namespace Data.Models
 
         public Dictionary<string, List<PostType>> AllCategories;
 
-        public Location CurrentLocation;
+        public string CurrentLocation;
 
         public HomePageViewModel(Dictionary<string, List<Location>> locationList, Dictionary<string, List<PostType>> categoryList)
         {
             AllCategories = categoryList;
             AllLocations = locationList;
-            CurrentLocation = locationList.Values.First().First();
+            CurrentLocation = locationList.Values.First().First().Area;
         }
     }
 }
