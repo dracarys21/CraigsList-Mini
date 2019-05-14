@@ -26,7 +26,9 @@
 
             <hr />
             <h3>About</h3>
-            <p>Use this area to provide additional information.</p>
+            <p>
+                Craigslist is an American classified advertisements website with sections devoted to jobs, housing, services etc.
+            </p>
 
         </div>
 
@@ -35,15 +37,15 @@
                 <div class="container col-sm-10 border border-info" style="background-color: gainsboro; padding-left:2%; padding-right:2%;">
                     <div class="col-sm-3">
                         <h3 class="text-primary" style="font-style: initial">
-                            @Html.ActionLink(Model.CurrentLocation.Area, "SetCookies", new { cookieName = "location", value = Model.CurrentLocation.Area + "|" })
+                            @Html.ActionLink(Model.CurrentLocation, "SetCookies", new { cookieName = "location", value = Model.CurrentLocation + "|" })
                         </h3>
                     </div>
                     <div class="col-sm-9" style="padding-top:3%;">
                         <div>
-                            @foreach (Location loc in Model.AllLocations[Model.CurrentLocation.Area])
+                            @foreach (Location loc in Model.AllLocations[Model.CurrentLocation])
                             {
                                 <div style="display:inline-block;">
-                                    <a href="@Url.Action("SetCookies",new {cookieName = "location" , value = Model.CurrentLocation.Area+"|"+loc.Locale})" class="badge bg-light text-primary border border-primary" style="height: 100%;">
+                                    <a href="@Url.Action("SetCookies",new {cookieName = "location" , value = Model.CurrentLocation+"|"+loc.Locale})" class="badge bg-light text-primary border border-primary" style="height: 100%;">
                                         @loc.Locale
                                     </a>
                                 </div>
@@ -83,7 +85,7 @@
                 <div class="card">
                     <div class="card-header" id="headingOne">
                         <h6>
-                            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align:center;">
+                            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align:center; height: 20px; padding-top: 1%;">
                                 All Locations
                             </button>
                         </h6>
@@ -95,7 +97,7 @@
                                 @foreach (KeyValuePair<string, List<Location>> keyValuePair in Model.AllLocations)
                                 {
                                     <div class="container">
-                                        <a href="#" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
+                                        <a href="@Url.Action("ChangeLocation", new { newLocationName = keyValuePair.Key })" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
                                             @keyValuePair.Key
                                         </a>
                                     </div>

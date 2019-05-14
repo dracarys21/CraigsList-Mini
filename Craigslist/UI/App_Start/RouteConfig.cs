@@ -19,6 +19,7 @@ namespace UI
                 url: "Location/{area}/ListLocale",
                 defaults: new { controller = "Locations", action = "ListLocale"}
             );
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

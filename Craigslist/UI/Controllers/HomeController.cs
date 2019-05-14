@@ -23,8 +23,15 @@ namespace UI.Controllers
                 activeLocs = LocationOps.GetAllLocations();
             }
             Dictionary<string, List<PostType>> activeCategories = PostTypesOps.GetAllPostTypes();
-            HomePageViewModel homePageViewModel = new HomePageViewModel(activeLocs, activeCategories);
-            return View(homePageViewModel);
+            HomePageViewModel model = new HomePageViewModel(activeLocs, activeCategories);
+            if (Request.Cookies["CurrentLocation"] != null)
+                model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
+            HttpCookie cookie = new HttpCookie("CurrentLocation")
+            {
+                Value = model.CurrentLocation
+            };
+            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+            return View(model);
         }
 
         public ActionResult SetCookies(string cookieName, string value)
@@ -43,6 +50,16 @@ namespace UI.Controllers
                 };
             }
 
+            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+            return RedirectToAction("Index");
+        }
+
+        public ActionResult ChangeLocation(string newLocationName)
+        {
+            HttpCookie cookie = new HttpCookie("CurrentLocation")
+            {
+                Value = newLocationName
+            };
             ControllerContext.HttpContext.Response.Cookies.Add(cookie);
             return RedirectToAction("Index");
         }
