@@ -1,17 +1,13 @@
 ﻿using Data.Models.Data;
-using Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BizLogic.Logic;
-using System.Threading.Tasks;
 using System.Data.Entity.Migrations;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace DB.Database
 {
-   public class LocationOps
+    public class LocationOps
     {
         public static void CreateLocation(string area, string locale, string slug)
         {
@@ -38,13 +34,14 @@ namespace DB.Database
             }
         }
 
-        public static Location GetLocationById(int? locationId)
+        public static Location GetLocationById(int locationId)
         { 
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    return db.Locations.Find(locationId);
+                    return db.Locations
+                        .FirstOrDefault(l => l.Id.Equals(locationId) && l.Active);
                 }
             }
             catch (Exception e)
@@ -66,18 +63,16 @@ namespace DB.Database
             }
         }
 
-        public static Dictionary<string, List<Location>> GetAllLocations()
+        public static List<Location> GetActiveLocationsList()
         {
-            try
-            {
+            try {
                 using (var db = new ApplicationDbContext())
                 {
-                    var allLocations = from loc in db.Locations
-                                       where loc.Active == true
-                                       select loc;
+                    var locations = from location in db.Locations
+                        where location.Active
+                        select location;
 
-                    Dictionary<string, List<Location>> ActiveLocations = allLocations.GroupBy(x => x.Area).ToDictionary(x => x.Key, x => x.ToList());
-                    return ActiveLocations;
+                    return locations.ToList();
                 }
             }
             catch (Exception e)
@@ -87,15 +82,39 @@ namespace DB.Database
             }
         }
 
-        public static ICollection<Location> GetLocalesByArea(string area)
+        public static Location GetLocationByAreaAndLocale(string area, string locale)
+        {
+            try
+            {
+                using(var db =  new ApplicationDbContext())
+                {
+                    var result = from loc in db.Locations
+                        where loc.Area.Equals(area) 
+                              && loc.Locale.Equals(locale)
+                              && loc.Active
+                        select loc;
+
+                    return result.FirstOrDefault();
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static IEnumerable<Location> GetLocalesByArea(string area)
         {
             try
             {
                 using(var db =  new ApplicationDbContext())
                 {
                     var locales = from loc in db.Locations
-                                  where loc.Area == area && loc.Active
+                                  where loc.Area == area
+                                        && loc.Active
                                   select loc;
+
                     return locales.ToList();
                 }
             }
@@ -105,7 +124,8 @@ namespace DB.Database
                 throw;
             }
         }
-        public static void DeleteLocationById(ApplicationUser user, int locationId, out StringBuilder errors)
+        
+        public static void DeleteLocationById(int locationId, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
@@ -120,14 +140,7 @@ namespace DB.Database
                         errors.Append("Location does not exist\n");
                         return;
                     }
-                    string roleId = UserRoles.GetAdminRoleId();
-                    if (!LocationActions.CanCRUDLocation(user, location))
-                    {
-                        errors.Append("Location cannot be deleted");
-                        return;
-                    }
-
-                    Location loccation = GetLocationById(locationId);
+                    
                     location.Active = false;
                     db.Locations.AddOrUpdate(location);
                     db.SaveChanges();
@@ -171,30 +184,23 @@ namespace DB.Database
             }
 
         }
-            public static void UpdateLocation(ApplicationUser user, Location location, out StringBuilder errors)
+
+        public static void UpdateLocation(Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
-                string roleId = UserRoles.GetAdminRoleId();
-                if (!LocationActions.CanCRUDLocation(user, location))
-                {
-                    errors.Append("Location cannot be updated.");
-                    return;
-                }
-
                 using (var db = new ApplicationDbContext())
                 {
                     var fetchedLocation = GetLocationById(location.Id);
 
                     if (fetchedLocation == null)
                     {
-                        errors.Append("Location does not exist.");
+                        errors.Append("Location does not exist.\n");
                         return;
                     }
 
-    
                     fetchedLocation.Slug = location.Slug;
                     fetchedLocation.Area = location.Area;
                     fetchedLocation.Locale = location.Locale;

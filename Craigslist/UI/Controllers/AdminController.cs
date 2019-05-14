@@ -11,9 +11,11 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using DB.Database;
 
 namespace UI.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // GET: Admin
@@ -33,7 +35,7 @@ namespace UI.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             ApplicationUser user = UserRoles.GetUserByUserName(username);
-            var posts = UserPost.GetPostsByUser(user);
+            var posts = UserPost.GetPostsByUserId(user.Id);
             if (posts == null)
             {
                 return HttpNotFound();

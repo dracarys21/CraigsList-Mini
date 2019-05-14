@@ -21,3 +21,5 @@ All documentation can be found in the `docs/` directory.
 
 1. The majority of the text in the requirements document is pull directly from the class Project Specifications document.
 2. Some test in the Models documentation is pulled directly from the class Project Specification document.
+3. Add role to identity: https://code.msdn.microsoft.com/ASPNET-MVC-5-Security-And-44cbdb97#content
+4. Help creating a drilldown dropdown on th create post: https://stackoverflow.com/questions/17013644/fill-drop-down-list-on-selection-of-another-drop-down-list#

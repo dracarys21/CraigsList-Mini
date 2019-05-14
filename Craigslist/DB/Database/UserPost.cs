@@ -9,14 +9,33 @@ using Models;
 
 namespace DB.Database
 {
-    public class UserPost
+    public static class UserPost
     {
-        public static void CreatePost(ApplicationUser createdBy, string title, string body)
+        public static void CreatePost(string createdByUserId, string title, string body,
+            string category, string subCategory, string area, string locale)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
+                    var createdBy = (from user in db.Users
+                        where user.Id.Equals(createdByUserId)
+                        select user).FirstOrDefault();
+
+                    if (createdBy == null)
+                        throw new Exception("User not allowed to create a post");
+
+                    var postType = PostTypesOps.GetPostTypeByCategoryAndSubCategory(
+                        category, subCategory);
+
+                    if (postType == null)
+                        throw new Exception("Post Type is invalid");
+
+                    var location = LocationOps.GetLocationByAreaAndLocale(area, locale);
+
+                    if (location == null)
+                        throw new Exception("Location is invalid");
+
                     var post = new Post {
                         Title = title,
                         Body = body,
@@ -24,7 +43,10 @@ namespace DB.Database
                         CreateDate = DateTime.Now,
                         Author = createdBy,
                         LastModifiedDate = DateTime.Now,
-                        LastModifiedBy = createdBy
+                        LastModifiedBy = createdBy,
+                        PostType = postType,
+                        Location = location,
+                        ExpirationDate = DateTime.Now.AddDays(5)
                     };
 
                     db.Posts.Add(post);
@@ -38,15 +60,15 @@ namespace DB.Database
             }
         }
 
-        public static List<Post> GetPostsByUser(ApplicationUser user)
+        public static List<Post> GetPostsByUserId(string userId)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
                     var posts = from post in db.Posts
-                        where post.Author.Id==user.Id
-                              && post.Deleted == false
+                        where post.Author.Id.Equals(userId)
+                              && !post.Deleted
                         select post;
 
                     return posts.ToList();
@@ -59,7 +81,7 @@ namespace DB.Database
             }
         }
 
-        public static void DeletePostById(ApplicationUser user, int postId,
+        public static void DeletePostByPostId(string userId, int postId,
             out StringBuilder errors)
         {
             errors = new StringBuilder();
@@ -76,11 +98,11 @@ namespace DB.Database
                         return;
                     }
                         
-                    if (!PostActions.CanDeletePost(user, post))
-                    {
-                        errors.Append("Post cannot be deleted");
-                        return;
-                    }
+                    // if (!PostActions.CanDeletePost(userId, post))
+                    // {
+                    //     errors.Append("Post cannot be deleted");
+                    //     return;
+                    // }
 
                     post.Deleted = true;
                     db.Posts.AddOrUpdate(post);
@@ -100,8 +122,22 @@ namespace DB.Database
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    return db.Posts.Find(postId);
+                    var post = db.Posts
+                        .Include("Author")
+                        .FirstOrDefault(p => p.Id.Equals(postId)
+                                             && !p.Deleted);
+
+                    if (post != null)
+                    {
+                        if (post.ExpirationDate.HasValue
+                            && post.ExpirationDate.Value.CompareTo(DateTime.Now.Date) > 0)
+                        {
+                            return post;
+                        }
+                    }
                 }
+
+                return null;
             }
             catch (Exception e)
             {
@@ -110,37 +146,36 @@ namespace DB.Database
             }
         }
 
-        public static void UpdatePost(ApplicationUser user, Post post, out StringBuilder errors)
+        public static void UpdatePost(string userId, int postId,
+            string title, string body, out StringBuilder errors)
         {
             errors = new StringBuilder();
 
             try
             {
-                if (!PostActions.CanUpdatePost(user, post))
-                {
-                    errors.Append("Post CANNOT be updated");
-                    return;
-                }
-
                 using (var db = new ApplicationDbContext())
                 {
-                    var postFromDb = GetPostById(post.Id);
+                    var post = GetPostById(postId);
+                    var updateBy = db.Users.Find(userId);
 
-                    if (postFromDb == null)
+                    if (!PostActions.CanUpdatePost(updateBy, post))
+                    {
+                        errors.Append("Post CANNOT be updated");
+                        return;
+                    }
+
+                    if (post == null)
                     {
                         errors.Append("Post could not be updated. Please try again later");
                         return;
                     }
 
-                    postFromDb.Body = post.Body;
-                    postFromDb.Title = post.Title;
-                    postFromDb.ExpirationDate = post.ExpirationDate;
-                    postFromDb.Location = post.Location;
-                    postFromDb.PostType = post.PostType;
-                    postFromDb.LastModifiedBy = user;
-                    postFromDb.LastModifiedDate = DateTime.Now;
+                    post.Body = body;
+                    post.Title = title;
+                    post.LastModifiedBy = updateBy;
+                    post.LastModifiedDate = DateTime.Now;
 
-                    db.Posts.AddOrUpdate(postFromDb);
+                    db.Posts.AddOrUpdate(post);
                     db.SaveChanges();
                 }
             }
@@ -163,7 +198,5 @@ namespace DB.Database
                 throw;
             }
         }
-
-        //Addition GetUserPost.
     }
 }

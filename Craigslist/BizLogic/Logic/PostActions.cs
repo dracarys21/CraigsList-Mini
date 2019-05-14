@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Data.Models.Data;
 using Models;
@@ -21,16 +22,16 @@ namespace BizLogic.Logic
                 && hasLocation && hasPostType;
         }
 
-        public static bool CanDeletePost(ApplicationUser user, Post post)
+        public static bool CanDeletePost(string userId, Post post)
         {
-            var isPostOwner = post.Author.Equals(user);
+            var isPostOwner = post.Author.Id.Equals(userId);
 
             return isPostOwner;
         }
 
         public static bool CanUpdatePost(ApplicationUser user, Post post)
         {
-            var isOwner = post.Author.Equals(user);
+            var isOwner = post.Author.Id.Equals(user.Id);
             var isPostExpiredOrDeleted = post.Deleted
                 || (post.ExpirationDate.HasValue && post.ExpirationDate < DateTime.Now);
 

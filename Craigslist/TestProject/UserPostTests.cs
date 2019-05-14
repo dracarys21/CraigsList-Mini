@@ -134,7 +134,7 @@ namespace TestProject
         {
             var post = GetDummyPost();
 
-            Assert.IsTrue(PostActions.CanDeletePost(post.Author, post));
+            Assert.IsTrue(PostActions.CanDeletePost(post.Author.Id, post));
         }
 
         [TestMethod]
@@ -148,7 +148,7 @@ namespace TestProject
                 Email = "test2@test.com"
             };
 
-            Assert.IsFalse(PostActions.CanDeletePost(user, post));
+            Assert.IsFalse(PostActions.CanDeletePost(user.Id, post));
         }
 
         [TestMethod]
