@@ -4,7 +4,6 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Text;
 using Data.Models.Data;
-using Models;
 namespace DB.Database
 {
     public class PostTypesOps
@@ -164,59 +163,6 @@ namespace DB.Database
                 throw;
             }
         }
-
-        // public static void DeletePostTypeByCategory(string category, out StringBuilder errors)
-        // {
-        //     errors = new StringBuilder();
-        //     try
-        //     {
-        //         using (var db = new ApplicationDbContext())
-        //         {
-        //             var postTypes = GetSubCategoriesByCategory(category);
-
-        //             if (postTypes == null)
-        //             {
-        //                 errors.Append("Location does not exist\n");
-        //                 return;
-        //             }
-
-        //             foreach (var l in postTypes)
-        //             {
-        //                 l.Active = false;
-        //                 db.PostTypes.AddOrUpdate(l);
-        //             }
-
-        //             db.SaveChanges();
-        //         }
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //         throw;
-
-        //     }
-
-        // }
-
-        // public static ICollection<PostType> GetPostTypesByCategory(string category)
-        // {
-        //     try
-        //     {
-        //         using (var db = new ApplicationDbContext())
-        //         {
-        //             var locales = from loc in db.PostTypes
-        //                           where loc.Category == category && loc.Active
-        //                           select loc;
-        //             return locales.ToList();
-        //         }
-        //     }
-        //     catch (Exception e)
-        //     {
-        //         Console.WriteLine(e);
-        //         throw;
-        //     }
-        // }
-
 
         public static ICollection<PostType> GetDistinctPostTypes()
         {

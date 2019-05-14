@@ -57,6 +57,7 @@ namespace UI.Controllers
             {
                 return HttpNotFound();
             }
+
             AdminUserDisplayViewModel u = new AdminUserDisplayViewModel();
             u.Email = user.Email;
             u.UserName = user.UserName;

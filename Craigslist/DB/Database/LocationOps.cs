@@ -153,38 +153,6 @@ namespace DB.Database
             }
         }
 
-        public static void DeleteLocationByArea(string area, out StringBuilder errors)
-        {
-            errors = new StringBuilder();
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var location = GetLocalesByArea(area);
-
-                    if (location == null)
-                    {
-                        errors.Append("Location does not exist\n");
-                        return;
-                    }
-
-                    foreach(var l in location)
-                    {
-                        l.Active = false;
-                        db.Locations.AddOrUpdate(l);
-                    }
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-
-            }
-
-        }
-
         public static void UpdateLocation(Location location, out StringBuilder errors)
         {
             errors = new StringBuilder();

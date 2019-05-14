@@ -13,16 +13,12 @@ namespace UI.Controllers
         // GET: PostTypes
         public ActionResult Index()
         {
-            var postTypes = PostTypesOps.GetDistinctPostTypes();
-
-            return View(postTypes);
+            return View(PostTypesOps.GetDistinctPostTypes());
         }
 
         public ActionResult ListSubCategories(string category)
         {
-            var subcategories = PostTypesOps.GetSubCategoriesByCategory(category);
-
-            return View(subcategories);
+            return View(PostTypesOps.GetSubCategoriesByCategory(category));
         }
         // GET: PostTypes/Details/5
         public ActionResult Details(int? id)

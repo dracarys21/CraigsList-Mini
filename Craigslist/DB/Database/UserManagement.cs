@@ -27,31 +27,5 @@ namespace DB.Database
                 throw;
             }
         }
-
-        public static void PromoteUser(string userId)
-        {
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var user = db.Users.Find(userId);
-
-                    if (user != null)
-                    {
-                        var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
-
-                        if (!userManager.IsInRole(userId, "Admin"))
-                        {
-                            userManager.AddToRole(userId, "Admin");
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
     }
 }

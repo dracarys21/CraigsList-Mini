@@ -14,7 +14,7 @@ namespace UI.Controllers
         // GET: Locations
         public ActionResult Index()
         {
-            return View(LocationOps.GetActiveLocationsList());
+            return View(LocationOps.GetDistinctLocation());
         }
 
 
