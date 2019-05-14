@@ -7,6 +7,8 @@ namespace Data.Models
 {
     public class PostViewModel
     {
+        public int Id { get; set; }
+
         [Required]
         [MinLength(3), MaxLength(140)]
         public string Title { get; set; }
@@ -14,6 +16,16 @@ namespace Data.Models
         [Required]
         [MinLength(3)]
         public string Body { get; set; }
+
+        public string CreateDate { get; set; }
+
+        public string Area { get; set; }
+
+        public string Locale { get; set; }
+
+        public string Category { get; set; }
+
+        public string Subcategory { get; set; }
 
         public string SelectedArea { get; set; }
 

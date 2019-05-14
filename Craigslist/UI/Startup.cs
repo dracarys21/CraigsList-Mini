@@ -43,7 +43,7 @@ namespace UI
             {
                 var role = new IdentityRole
                 {
-                    Name = "Manager"
+                    Name = "User"
                 };
 
                 roleManager.Create(role);   

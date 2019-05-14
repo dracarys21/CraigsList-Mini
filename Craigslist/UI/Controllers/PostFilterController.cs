@@ -84,30 +84,57 @@ namespace UI.Controllers
             }
         }
 
+        public List<string> Areas
+        {
+            get
+            {
+                var locations = LocationOps.GetActiveLocationsList();
+                var areas = new List<string>
+                {
+                    "Please Select an Area"
+                };
+
+                areas.AddRange(locations
+                    .GroupBy(l => l.Area)
+                    .Select(l => l.Key)
+                    .ToList());
+
+                return areas;
+            }
+        }
+
+        public List<string> Categories
+        {
+            get
+            {
+                var postTypes = PostTypesOps.GetActivePostTypesList();
+                var categories = new List<string>
+                {
+                    "Please Select a Category"
+                };
+
+                categories.AddRange(postTypes
+                    .GroupBy(p => p.Category)
+                    .Select(l => l.Key)
+                    .ToList());
+
+                return categories;
+            }
+        }
+
         // GET: PostFilter
         [HttpGet]
-        public ActionResult Index(string pNo = "1", string pAction = "", string query = "")
+        public ActionResult Index(string pNo = "1",
+            string area = "", string locale = "", string category = "",
+            string subcategory = "", string query = "")
         {
             var pageNo = int.Parse(pNo);
 
-            if (pAction.Equals("next"))
-                pageNo++;
-
-            if (pAction.Equals("prev"))
-                pageNo--;
-
-            if (pageNo < 1)
-                pageNo = 1;
-
-            // Cache all values
-            var location = Location;
-            var postType = PostType;
-
-            var posts = PostFilter.FilterPost(location.Area,
-                location.Locale, postType.Category, postType.SubCategory, query);
+            var posts = PostFilter.FilterPost(area,
+                locale, category, subcategory, query);
 
             var filteredPosts = posts
-                .Select(p => new PostFilterViewModel
+                .Select(p => new PostViewModel
                 {
                     Id = p.Id,
                     Title = p.Title,
@@ -119,7 +146,6 @@ namespace UI.Controllers
                     CreateDate = p.CreateDate.ToString("MMM dd")
                 }).ToList();
 
-            
             var pageSize = 5;
             ViewBag.PageCount = Math.Ceiling(filteredPosts.Count * 1.0 / pageSize);
             ViewBag.CurrentPage = pageNo;
@@ -128,8 +154,15 @@ namespace UI.Controllers
                 pageNo = ViewBag.PageCount + 1;
 
             var pagedPosts = filteredPosts.Skip((pageNo - 1) * pageSize).Take(pageSize);
-
-            return View(pagedPosts.ToList());
+            
+            return View(new PostFilterViewModel
+            {
+                Posts = pagedPosts.ToList(),
+                Categories = new SelectList(Categories, "Please Select a Category"),
+                Areas = new SelectList(Areas, "Please Select an Area"),
+                SubCategories = null,
+                Locales = null
+            });
         }
 
         // TODO: Remove this. The cookie should be set from the home page

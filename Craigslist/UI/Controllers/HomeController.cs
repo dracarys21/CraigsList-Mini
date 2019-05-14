@@ -7,7 +7,7 @@ namespace UI.Controllers
     public class HomeController : Controller
     {
 
-        public ActionResult HomePage()
+        public ActionResult Index()
         {
             var activeLocs = LocationOps.GetActiveLocationsList();
             var activeCategories = PostTypesOps.GetActivePostTypesList();
