@@ -176,5 +176,35 @@ namespace DB.Database
             }
         }
 
+        public static void DeletePostTypeByCategory(string category, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var postTypes = GetSubCategoriesByCategory(category);
+
+                    if (postTypes == null)
+                    {
+                        errors.Append("Location does not exist\n");
+                        return;
+                    }
+
+                    foreach (var l in postTypes)
+                    {
+                        l.Active = false;
+                        db.PostTypes.AddOrUpdate(l);
+                    }
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
     }
 }

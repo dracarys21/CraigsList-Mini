@@ -42,6 +42,7 @@ namespace Data.Models
 
                 AllLocations.Add(area, locales.ToList());
             }
+            CurrentLocation = AllLocations.Values.First().First().Area;
         }
     }
 }

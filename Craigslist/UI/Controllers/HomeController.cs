@@ -13,8 +13,8 @@ namespace UI.Controllers
             var activeCategories = PostTypesOps.GetActivePostTypesList();
             var model = new HomePageViewModel(activeLocs, activeCategories);
 
-            if (Request.Cookies["CurrentLocation"] != null)
-                model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
+            if (Request.Cookies["CurrentLocation"] != null && activeLocs.Count != 0)
+                 model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
 
             HttpCookie cookie = new HttpCookie("CurrentLocation")
             {

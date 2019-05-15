@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
 using System.Text;
+using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
 {
@@ -115,6 +116,33 @@ namespace UI.Controllers
             if (errors.Length > 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
 
+            return RedirectToAction("Index");
+        }
+
+
+        public ActionResult DeleteCategory(string category)
+        {
+            if (category == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            PostType postType = PostTypesOps.GetSubCategoriesByCategory(category)[0];
+            if (postType == null)
+            {
+                return HttpNotFound();
+            }
+            DeleteAreaOrCategoryViewModel v = new DeleteAreaOrCategoryViewModel();
+            v.Upper = postType.Category;
+            return View(v);
+        }
+
+
+        [HttpPost, ActionName("DeleteCategory")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteCategoryConfirmed(string category)
+        {
+            string userid = User.Identity.GetUserId();
+            PostTypesOps.DeletePostTypeByCategory(category, out StringBuilder error);
             return RedirectToAction("Index");
         }
     }

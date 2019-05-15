@@ -121,5 +121,35 @@ namespace UI.Controllers
 
             return RedirectToAction("Index");
         }
+
+        public ActionResult DeleteArea(string area)
+        {
+            if (area == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Location location = LocationOps.GetLocalesByArea(area).FirstOrDefault();
+            if (location == null)
+            {
+                return HttpNotFound();
+            }
+            DeleteAreaOrCategoryViewModel v = new DeleteAreaOrCategoryViewModel();
+            v.Upper = location.Area;
+            return View(v);
+        }
+
+        // POST: Locations/DeleteArea
+        [HttpPost, ActionName("DeleteArea")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteAreaConfirmed(string area)
+        {
+            string userid = User.Identity.GetUserId();
+            LocationOps.DeleteLocationByArea(area, out StringBuilder error);
+            if(Request.Cookies["CurrentLocation"]!=null && Request.Cookies["CurrentLocation"].Value==area)
+            {
+                Response.Cookies["CurrentLocation"].Value = LocationOps.GetDistinctLocation().FirstOrDefault().Area;
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
