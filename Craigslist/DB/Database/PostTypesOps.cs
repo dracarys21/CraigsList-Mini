@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Data.Models.Data;
-using Models;
 namespace DB.Database
 {
     public class PostTypesOps
@@ -24,7 +22,138 @@ namespace DB.Database
                         Active = true
                     };
 
-                    db.PostType.Add(postTypes);
+                    db.PostTypes.Add(postTypes);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static PostType GetPostTypeById(int postTypeId)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    return db.PostTypes
+                        .FirstOrDefault(p => p.Id.Equals(postTypeId) && p.Active);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static List<PostType> GetActivePostTypesList()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                var postTypes = from postType in db.PostTypes
+                    where postType.Active
+                    select postType;
+
+                return postTypes.ToList();
+            }
+        }
+
+        public static PostType GetPostTypeByCategoryAndSubCategory(string category, string subCategory)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var result = from postType in db.PostTypes
+                                 where postType.Category.Equals(category)
+                                       && postType.SubCategory.Equals(subCategory)
+                                       && postType.Active
+                                 select postType;
+
+                    return result.FirstOrDefault();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static List<PostType> GetSubCategoriesByCategory(string category)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var postTypes = from postType in db.PostTypes
+                                  where postType.Category.Equals(category)
+                                  && postType.Active
+                                  select postType;
+                    return postTypes.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        
+        public static void DeletePostTypeById(int postTypeId, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var postType = GetPostTypeById(postTypeId);
+
+                    if (postType == null)
+                    {
+                        errors.Append("Post Type does not exist\n");
+                        return;
+                    }
+                    
+                    postType.Active = false;
+
+                    db.PostTypes.AddOrUpdate(postType);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static void UpdatePostType(PostType postType, out StringBuilder errors)
+        {
+            errors = new StringBuilder();
+
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var fetchedPostType = GetPostTypeById(postType.Id);
+
+                    if (fetchedPostType == null)
+                    {
+                        errors.Append("Post Type does not exist.\n");
+                        return;
+                    }
+
+                    fetchedPostType.Slug = postType.Slug;
+                    fetchedPostType.Category = postType.Category;
+                    fetchedPostType.SubCategory = postType.SubCategory;
+
+                    db.PostTypes.AddOrUpdate(fetchedPostType);
                     db.SaveChanges();
                 }
             }
@@ -39,27 +168,11 @@ namespace DB.Database
         {
             using (var db = new ApplicationDbContext())
             {
-                var pt = from p in db.PostType
+                var pt = from p in db.PostTypes
                          where p.Active == true
                          select p;
                 return pt.GroupBy(p => p.Category).Select(p => p.FirstOrDefault()).ToList();
-                        
-            }
-        }
 
-        public static PostType GetPostTypesById(int? PostTypeId)
-        {
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    return db.PostType.Find(PostTypeId);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
         }
 
@@ -70,7 +183,7 @@ namespace DB.Database
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    var postTypes = GetPostTypesByCategory(category);
+                    var postTypes = GetSubCategoriesByCategory(category);
 
                     if (postTypes == null)
                     {
@@ -81,7 +194,7 @@ namespace DB.Database
                     foreach (var l in postTypes)
                     {
                         l.Active = false;
-                        db.PostType.AddOrUpdate(l);
+                        db.PostTypes.AddOrUpdate(l);
                     }
                     db.SaveChanges();
                 }
@@ -90,121 +203,8 @@ namespace DB.Database
             {
                 Console.WriteLine(e);
                 throw;
-
-            }
-
-        }
-
-        public static Dictionary<string, List<PostType>> GetAllPostTypes()
-        {
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var allPostTypes = from type in db.PostType
-                                       where type.Active == true
-                                       select type;
-
-                    Dictionary<string, List<PostType>> ActiveLocations = allPostTypes.GroupBy(x => x.Category).ToDictionary(x => x.Key, x => x.ToList());
-                    return ActiveLocations;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
             }
         }
 
-        public static ICollection<PostType> GetPostTypesByCategory(string category)
-        {
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var locales = from loc in db.PostType
-                                  where loc.Category == category && loc.Active
-                                  select loc;
-                    return locales.ToList();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-        public static void DeletePostTypeById(ApplicationUser user, int postTypeId, out StringBuilder errors)
-        {
-            errors = new StringBuilder();
-
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var location = GetPostTypesById(postTypeId);
-
-                    if (location == null)
-                    {
-                        errors.Append("Location does not exist\n");
-                        return;
-                    }
-                    string roleId = UserRoles.GetAdminRoleId();
-                  /*  if (!LocationActions.CanCRUDLocation(user, location))
-                    {
-                        errors.Append("Location cannot be deleted");
-                        return;
-                    }*/
-
-                    PostType Postype = GetPostTypesById(postTypeId);
-                   Postype.Active = false;
-                    db.PostType.AddOrUpdate(Postype);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        public static void UpdatePostTypes(ApplicationUser user, PostType postType, out StringBuilder errors)
-        {
-            errors = new StringBuilder();
-
-            try
-            {
-                string roleId = UserRoles.GetAdminRoleId();
-               /* if (!LocationActions.CanCRUDLocation(user, location))
-                {
-                    errors.Append("Location cannot be updated.");
-                    return;
-                }*/
-
-                using (var db = new ApplicationDbContext())
-                {
-                    var fetchedPostType = GetPostTypesById(postType.Id);
-
-                    if (fetchedPostType == null)
-                    {
-                        errors.Append("Location does not exist.");
-                        return;
-                    }
-
-                    fetchedPostType.Slug = postType.Slug;
-                    fetchedPostType.Category = postType.Category;
-                    fetchedPostType.SubCategory = postType.SubCategory;
-
-                    db.PostType.AddOrUpdate(fetchedPostType);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
     }
 }
