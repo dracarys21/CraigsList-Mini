@@ -130,17 +130,14 @@ namespace UI.Controllers
             string locale = "", string subcategory = "",
             string query = "", string pageAction = "")
         {
-//            var pageNo = int.Parse(pNo);
-            
             if (!int.TryParse(pageAction, out var pageNo))
-            {
                 pageNo = 1;
-            }
 
             var selectedArea = string.IsNullOrEmpty(area) ? "Please Select an Area" : area;
+            var selectedLocale = string.IsNullOrEmpty(locale) ? "Please Select a Locale" : locale;
             var selectedCategory = string.IsNullOrEmpty(category) ? "Please Select a Category" : category;
             var selectedSubcategory = string.IsNullOrEmpty(subcategory) ? "Please Select a Subcategory" : subcategory;
-            var selectedLocale = string.IsNullOrEmpty(locale) ? "Please Select a Locale" : locale;
+            
             var actualArea = area.Equals("Please Select an Area") ? "" : area;
             var actualLocale = locale.Equals("Please Select a Locale") ? "" : locale;
             var actualCategory = category.Equals("Please Select a Category") ? "" : category;
@@ -171,11 +168,13 @@ namespace UI.Controllers
 
             if (pageNo > ViewBag.PageCount)
                 pageNo = ViewBag.PageCount;
-
-            ViewBag.RightPageIndex = Convert.ToInt32(Math.Min(pageNo + pageSize, ViewBag.PageCount));
-            ViewBag.LeftPageIndex = ViewBag.RightPageIndex - pageSize;
-            ViewBag.VisibleRightIndex = Convert.ToInt32(Math.Min(ViewBag.RightPageIndex, ViewBag.PageCount));
-            ViewBag.VisibleLeftPageIndex = Convert.ToInt32(Math.Max(ViewBag.LeftPageIndex, 1));
+//
+//            var spread = ViewBag.PageCount / pageSize;
+//
+//            ViewBag.RightPageIndex = Convert.ToInt32(Math.Min(spread, ViewBag.PageCount));
+//            ViewBag.LeftPageIndex = ViewBag.RightPageIndex - pageSize;
+//            ViewBag.VisibleRightIndex = Convert.ToInt32(Math.Min(ViewBag.RightPageIndex, ViewBag.PageCount));
+//            ViewBag.VisibleLeftPageIndex = Convert.ToInt32(Math.Max(ViewBag.LeftPageIndex, 1));
 
             ViewBag.CurrentPage = pageNo;
 
@@ -184,23 +183,28 @@ namespace UI.Controllers
             var locales = new List<string> { selectedLocale };
 
             if (string.IsNullOrEmpty(actualCategory) && !string.IsNullOrEmpty(actualSubcategory))
-                category = PostTypesOps.GetCategoryBySubcategoryName(actualSubcategory);
+            {
+                actualCategory = PostTypesOps.GetCategoryBySubcategoryName(actualSubcategory);
+                selectedCategory = actualCategory;
+            }
             
             if (string.IsNullOrEmpty(actualArea) && !string.IsNullOrEmpty(actualLocale))
-                area = LocationOps.GetAreaByLocale(actualLocale);
+            {
+                actualArea = LocationOps.GetAreaByLocale(actualLocale);
+                selectedArea = actualArea;
+            }
 
-            if (!string.IsNullOrEmpty(category))
-                subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(category)
+            if (!string.IsNullOrEmpty(actualCategory))
+                subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(actualCategory)
                     .Select(s => s.SubCategory)
                     .OrderBy(l => l)
                     .ToList());
             
-            if (!string.IsNullOrEmpty(area))
-                locales.AddRange(LocationOps.GetLocalesByArea(area)
+            if (!string.IsNullOrEmpty(actualArea))
+                locales.AddRange(LocationOps.GetLocalesByArea(actualArea)
                     .Select(l => l.Locale)
                     .OrderBy(l => l)
                     .ToList());
-
             
             return View(new PostFilterViewModel
             {

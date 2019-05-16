@@ -51,7 +51,7 @@ namespace DB.Database
             }
         }
 
-        public static ICollection<Location> GetDistinctLocation()
+        public static ICollection<Location> GetDistinctAreas()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -224,7 +224,7 @@ namespace DB.Database
                               && location.Locale.ToLower().Equals(locale.ToLower())
                         select location.Area;
 
-                    return area.ToString();
+                    return area.ToList().FirstOrDefault();;
                 }
             }
             catch (Exception e)

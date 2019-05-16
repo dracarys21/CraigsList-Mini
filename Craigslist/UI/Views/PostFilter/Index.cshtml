@@ -4,73 +4,102 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Search Results</h2>
-
 @using (Html.BeginForm("Index", "PostFilter", FormMethod.Get, new { id = "search" }))
 {
-    <div class="row">
-        <div class="col">
-            <div class="form-group">
-                @Html.LabelFor(model => model.Areas, htmlAttributes: new { @class = "control-label" })
-                @Html.DropDownListFor(model => model.Area,
-                    Model.Areas,
-                    new
-                    {
-                        @class = "form-control",
-                        @id = "area",
-                        @onchange = "javascript:postArea(this.value);"
-                    })
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Filters</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Areas, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.Area,
+                            Model.Areas,
+                            new
+                            {
+                                @class = "form-control",
+                                @id = "area",
+                                @onchange = "javascript:postArea(this.value);"
+                            })
+                    </div>
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.Locales, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Locale,
+                        Model.Locales,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "locale",
+                            @onchange = "document.getElementById('search').submit();"
+                        })
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Category,
+                        Model.Categories,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "category",
+                            @onchange = "javascript:postCategory(this.value);"
+                        })
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.SubCategories, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Subcategory,
+                        Model.SubCategories,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "subcategory",
+                            @onchange = "document.getElementById('search').submit();"
+                        })
+                </div>
             </div>
-        </div>
-        <div class="col">
-            @Html.LabelFor(model => model.Locales, htmlAttributes: new { @class = "control-label" })
-            @Html.DropDownListFor(model => model.Locale,
-                Model.Locales,
-                new
-                {
-                    @class = "form-control",
-                    @id = "locale",
-                    @onchange = "document.getElementById('search').submit();"
-                })
-        </div>
-        <div class="col">
-            @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label" })
-            @Html.DropDownListFor(model => model.Category,
-                Model.Categories,
-                new
-                {
-                    @class = "form-control",
-                    @id = "category",
-                    @onchange = "javascript:postCategory(this.value);"
-                })
-        </div>
-        <div class="col">
-            @Html.LabelFor(model => model.SubCategories, htmlAttributes: new { @class = "control-label" })
-            @Html.DropDownListFor(model => model.Subcategory,
-                Model.SubCategories,
-                new
-                {
-                    @class = "form-control",
-                    @id = "subcategory",
-                    @onchange = "document.getElementById('search').submit();"
-                })
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-sm-4">
-            @Html.EditorFor(model => model.Query, new {
-                htmlAttributes = new {
-                    @class = "form-control",
-                    @id = "query"
-                }})
-        </div>
-        <div class="col">
-            <button class="btn btn-success" type="submit">Search</button>
+            <div class="row">
+                <div class="col-sm-3">
+                    @Html.EditorFor(model => model.Query, new
+                    {
+                        htmlAttributes = new
+                        {
+                            @class = "form-control",
+                            @id = "query",
+                            @placeholder = "Search title or body"
+                        }
+                    })
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+            </div>
         </div>
     </div>
 
     @Html.HiddenFor(m => m.PageAction, new { id = "pageAction" })
+
+    <h3>Search Results</h3>
+    <table class="table table-striped">
+        @foreach (var item in Model.Posts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    <span>
+                        @Html.ActionLink(item.Title, "Details", new { id = item.Id }, new { })
+
+                        (@Html.DisplayFor(modelItem => item.Locale))
+                    </span>
+
+                </td>
+            </tr>
+        }
+    </table>
 
     <div class="row">
         <div class="col">
@@ -82,7 +111,7 @@
                 <li class="@prevListStyle">
                     <a class="page-link" href="javascript:;" onclick="setPageAction('prev');">Previous</a>
                 </li>
-                @for (int i = ViewBag.CurrentPage; i < Math.Min(ViewBag.CurrentPage + ViewBag.PageSize, ViewBag.PageCount + 1); i++)
+                @for (int i = Math.Max(ViewBag.CurrentPage - (ViewBag.PageSize / 2), 1); i < Math.Min(ViewBag.CurrentPage + (ViewBag.PageSize / 2), ViewBag.PageCount + 1); i++)
                 {
                     var listStyle = ViewBag.CurrentPage == i ? "page-item active" : "page-item";
 
@@ -97,27 +126,8 @@
 
         </div>
     </div>
-
 }
 
-<table class="table">
-    @foreach (var item in Model.Posts)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
-            </td>
-            <td>
-                <span>
-                    @Html.ActionLink(item.Title, "Details", new { id = item.Id }, new { })
-
-                    (@Html.DisplayFor(modelItem => item.Locale))
-                </span>
-
-            </td>
-        </tr>
-    }
-</table>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

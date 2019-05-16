@@ -164,7 +164,7 @@ namespace DB.Database
             }
         }
 
-        public static ICollection<PostType> GetDistinctPostTypes()
+        public static ICollection<PostType> GetDistinctCategories()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -215,7 +215,7 @@ namespace DB.Database
                     && postType.SubCategory.ToLower().Equals(subcategory.ToLower())
                     select postType.Category;
 
-                return category.ToString();
+                return category.ToList().FirstOrDefault();
             }
         }
     }

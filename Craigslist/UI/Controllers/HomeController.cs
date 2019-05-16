@@ -1,59 +1,85 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using DB.Database;
 using System.Web.Mvc;
 using Data.Models;
+using Data.Models.Data;
 
 namespace UI.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(string area = "", string locale = "",
+            string category = "", string subcategory = "")
         {
-            var activeLocs = LocationOps.GetActiveLocationsList();
+
+//            var categories = PostTypesOps.GetDistinctCategories().ToList();
+//            var subcategories = new List<string>();
+//            if (!string.IsNullOrEmpty(category))
+//                subcategories = PostTypesOps.GetSubCategoriesByCategory(category)
+//                    .Select(c => c.SubCategory).ToList();
+
+//            var activeLocs = LocationOps.GetActiveLocationsList();
+//            var model = new HomePageViewModel(activeLocs, activeCategories);
+
+//            if (Request.Cookies["CurrentLocation"] != null && activeLocs.Count != 0)
+//                 model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
+
+//            HttpCookie cookie = new HttpCookie("CurrentLocation")
+//            {
+//                Value = model.CurrentLocation
+//            };
+//
+//            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
+
+            if (!string.IsNullOrEmpty(category) || !string.IsNullOrEmpty(subcategory))
+                return RedirectToAction("Index", "PostFilter",
+                    new {area, locale, category, subcategory});
+
+            var areas = LocationOps.GetDistinctAreas()
+                .Select(a => a.Area)
+                .ToList();
+
+            var locales = new List<string>();
             var activeCategories = PostTypesOps.GetActivePostTypesList();
-            var model = new HomePageViewModel(activeLocs, activeCategories);
 
-            if (Request.Cookies["CurrentLocation"] != null && activeLocs.Count != 0)
-                 model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
+            if (!string.IsNullOrEmpty(area))
+                locales = LocationOps.GetLocalesByArea(area)
+                    .Select(l => l.Locale).ToList();
 
-            HttpCookie cookie = new HttpCookie("CurrentLocation")
+            return View(new HomePageViewModel(activeCategories)
             {
-                Value = model.CurrentLocation
-            };
-
-            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-            return View(model);
+                Areas = areas,
+                Locales = locales
+            });
         }
 
-        public ActionResult SetCookies(string cookieName, string value)
-        {
-            HttpCookie cookie = null;
-            if (Request.Cookies[cookieName] != null)
-            {
-                Request.Cookies[cookieName].Value = value;
-                cookie = Request.Cookies[cookieName];
-            }
-            else
-            {
-                cookie = new HttpCookie(cookieName)
-                {
-                    Value = value
-                };
-            }
+//        // Get: /{location}/{posttype}
+//        [HttpPost]
+//        public ActionResult FilterPosts(string area = "", string locale = "",
+//            string category = "", string subcategory = "")
+//        {
+//            return RedirectToAction("Index", "PostFilter", 
+//                new { area, locale, category, subcategory });
+//        }
 
-            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult ChangeLocation(string newLocationName)
-        {
-            HttpCookie cookie = new HttpCookie("CurrentLocation")
-            {
-                Value = newLocationName
-            };
-            
-            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-            return RedirectToAction("Index");
-        }
+//        [HttpGet]
+//        public ActionResult SetArea(string area)
+//        {
+//            var areas = LocationOps.GetDistinctAreas().ToList();
+//            var activeCategories = PostTypesOps.GetActivePostTypesList();
+//            var locales = new List<string>();
+//
+//            if (!string.IsNullOrEmpty(area))
+//                locales = LocationOps.GetLocalesByArea(area)
+//                    .Select(l => l.Locale).ToList();
+//
+//            return View("Index", new HomePageViewModel(areas, activeCategories)
+//            {
+//                Areas = new SelectList(areas.Select(a => a.Area), "New York"),
+//                Locales = locales
+//            });
+//        }
     }
 }

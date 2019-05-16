@@ -1,20 +1,30 @@
 ﻿using Data.Models.Data;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 
 namespace Data.Models
 {
     public class HomePageViewModel
     {
-        public Dictionary<string, List<Location>> AllLocations;
+//        public Dictionary<string, List<Location>> AllLocations;
 
         public Dictionary<string, List<PostType>> AllCategories;
 
-        public string CurrentLocation;
+        public List<string> Areas { get; set; }
 
-        public HomePageViewModel(List<Location> locations, List<PostType> postTypes)
+        public List<string> Locales { get; set; }
+        
+        public string Area { get; set; }
+
+        public string Locale { get; set; }
+
+        public string Category { get; set; }
+
+        public string Subcategory { get; set; }
+
+        public HomePageViewModel(List<PostType> postTypes)
         {
-            AllLocations = new Dictionary<string, List<Location>>();
             AllCategories = new Dictionary<string, List<PostType>>();
 
             var categories = from postType in postTypes
@@ -29,20 +39,6 @@ namespace Data.Models
 
                 AllCategories.Add(category, subCategories.ToList());
             }
-
-            var areas = from location in locations
-                group location.Area by location.Area into area
-                select area.Key;
-
-            foreach (var area in areas)
-            {
-                var locales = from location in locations
-                    where location.Area.Equals(area)
-                    select location;
-
-                AllLocations.Add(area, locales.ToList());
-            }
-            CurrentLocation = AllLocations.Values.First().First().Area;
         }
     }
 }
