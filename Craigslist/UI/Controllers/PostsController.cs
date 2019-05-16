@@ -5,36 +5,53 @@ using System.Net;
 using System.Web.Mvc;
 using Data.Models;
 using DB.Database;
-using Data.Models.Data;
-using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
 {
-    [Authorize]
     public class PostsController : Controller
     {
         // GET: Posts
-        public ActionResult Index(string query = "")
+        public ActionResult Index(string returnUri = "")
         {
-            return View(UserPost.GetPostsByUserId(User.Identity.GetUserId()));
+            if (!string.IsNullOrEmpty(returnUri))
+                return Redirect(returnUri);
+
+            if (User.Identity.IsAuthenticated)
+                return View(UserPost.GetPostsByUserId(User.Identity.GetUserId()));
+            else
+                return RedirectToAction("Login", "Account");
         }
 
         // GET: Posts/Details/5
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var post = UserPost.GetPostById(id.Value);
-
+            
             if (post == null)
                 return HttpNotFound();
-            
-            return View(post);
+
+            var viewModel = new PostViewModel
+            {
+                Title = post.Title,
+                Body = post.Body,
+                CreateDate = post.CreateDate.ToShortDateString()
+            };
+
+            if (Request.UrlReferrer != null
+                && !string.IsNullOrEmpty(Request.UrlReferrer.PathAndQuery)
+                && Request.UrlReferrer.PathAndQuery.Contains("PostFilter"))
+                viewModel.ReturnUri = Request.UrlReferrer.PathAndQuery;
+
+            return View(viewModel);
         }
 
         // GET: Posts/Create
+        [Authorize]
         public ActionResult Create()
         {
             var locations = LocationOps.GetActiveLocationsList();
@@ -70,6 +87,7 @@ namespace UI.Controllers
         }
 
         // POST: Posts/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(
@@ -100,6 +118,7 @@ namespace UI.Controllers
         }
 
         // GET: Posts/Edit/5
+        [Authorize]
         public ActionResult Edit(int? id)
         {
             if (!id.HasValue)
@@ -114,6 +133,7 @@ namespace UI.Controllers
         }
 
         // POST: Posts/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, [Bind(Include = "Title,Body")] PostViewModel post)
@@ -131,6 +151,7 @@ namespace UI.Controllers
         }
 
         // GET: Posts/Delete/5
+        [Authorize]
         public ActionResult Delete(int? id)
         {
             if (!id.HasValue)
@@ -145,6 +166,7 @@ namespace UI.Controllers
         }
 
         // POST: Posts/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

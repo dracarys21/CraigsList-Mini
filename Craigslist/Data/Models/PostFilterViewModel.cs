@@ -24,7 +24,7 @@ namespace Data.Models
         public string Query { get; set; }
 
         public string PageAction { get; set; }
-
+        
         public List<PostViewModel> Posts { get; set; }
 
         public SelectList Areas { get; set; }

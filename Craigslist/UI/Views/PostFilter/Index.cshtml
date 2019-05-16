@@ -74,10 +74,10 @@
 
     <div class="row">
         <div class="col">
-        @{
-            var prevListStyle = ViewBag.CurrentPage > 1 ? "page-item" : "page-item disabled";
-            var nextListStyle = ViewBag.CurrentPage == ViewBag.PageCount ? "page-item disabled" : "page-item";
-        }
+            @{
+                var prevListStyle = ViewBag.CurrentPage > 1 ? "page-item" : "page-item disabled";
+                var nextListStyle = ViewBag.CurrentPage == ViewBag.PageCount ? "page-item disabled" : "page-item";
+            }
             <ul class="pagination">
                 <li class="@prevListStyle">
                     <a class="page-link" href="javascript:;" onclick="setPageAction('prev');">Previous</a>
@@ -109,7 +109,7 @@
             </td>
             <td>
                 <span>
-                    @Html.ActionLink(item.Title, "Details", "Posts")
+                    @Html.ActionLink(item.Title, "Details", new { id = item.Id }, new { })
 
                     (@Html.DisplayFor(modelItem => item.Locale))
                 </span>

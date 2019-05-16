@@ -194,7 +194,7 @@ namespace UI.Controllers
                     .Select(l => l.Locale)
                     .OrderBy(l => l)
                     .ToList());
-
+            
             return View(new PostFilterViewModel
             {
                 Query = query,
@@ -204,6 +204,12 @@ namespace UI.Controllers
                 SubCategories = new SelectList(subcategories, selectedSubcategory),
                 Locales = new SelectList(locales, selectedLocale)
             });
+        }
+
+        [HttpGet]
+        public ActionResult Details(int id)
+        {
+            return RedirectToAction("Details", "Posts", new { id });
         }
 
         #region Ajax Methods
@@ -241,29 +247,5 @@ namespace UI.Controllers
         }
 
         #endregion
-
-        // TODO: Remove this. The cookie should be set from the home page
-        [HttpGet]
-        public ActionResult SetCookie(string cookieName, string value)
-        {
-            HttpCookie cookie = null;
-
-            if (Request.Cookies[cookieName] != null)
-            {
-                Request.Cookies[cookieName].Value = value;
-                cookie = Request.Cookies[cookieName];
-            }
-            else
-            {
-                cookie = new HttpCookie(cookieName)
-                {
-                    Value = value
-                };
-            }
-            
-            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-
-            return RedirectToAction("Index");
-        }
     }
 }
