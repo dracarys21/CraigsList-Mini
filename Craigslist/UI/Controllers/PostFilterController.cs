@@ -97,6 +97,7 @@ namespace UI.Controllers
                 areas.AddRange(locations
                     .GroupBy(l => l.Area)
                     .Select(l => l.Key)
+                    .OrderBy(l => l)
                     .ToList());
 
                 return areas;
@@ -116,6 +117,7 @@ namespace UI.Controllers
                 categories.AddRange(postTypes
                     .GroupBy(p => p.Category)
                     .Select(l => l.Key)
+                    .OrderBy(l => l)
                     .ToList());
 
                 return categories;
@@ -124,14 +126,27 @@ namespace UI.Controllers
 
         // GET: PostFilter
         [HttpGet]
-        public ActionResult Index(string pNo = "1",
-            string area = "", string locale = "", string category = "",
-            string subcategory = "", string query = "")
+        public ActionResult Index(string area = "", string category = "",
+            string locale = "", string subcategory = "",
+            string query = "", string pageAction = "")
         {
-            var pageNo = int.Parse(pNo);
+//            var pageNo = int.Parse(pNo);
+            
+            if (!int.TryParse(pageAction, out var pageNo))
+            {
+                pageNo = 1;
+            }
 
-            var posts = PostFilter.FilterPost(area,
-                locale, category, subcategory, query);
+            var selectedArea = string.IsNullOrEmpty(area) ? "Please Select an Area" : area;
+            var selectedCategory = string.IsNullOrEmpty(category) ? "Please Select a Category" : category;
+            var selectedSubcategory = string.IsNullOrEmpty(subcategory) ? "Please Select a Subcategory" : subcategory;
+            var selectedLocale = string.IsNullOrEmpty(locale) ? "Please Select a Locale" : locale;
+            var actualArea = area.Equals("Please Select an Area") ? "" : area;
+            var actualLocale = locale.Equals("Please Select a Locale") ? "" : locale;
+            var actualCategory = category.Equals("Please Select a Category") ? "" : category;
+            var actualSubcategory = subcategory.Equals("Please Select a Subcategory") ? "" : subcategory;
+            var posts = PostFilter.FilterPost(actualArea, actualLocale,
+                actualCategory, actualSubcategory, query);
 
             var filteredPosts = posts
                 .Select(p => new PostViewModel
@@ -146,24 +161,86 @@ namespace UI.Controllers
                     CreateDate = p.CreateDate.ToString("MMM dd")
                 }).ToList();
 
-            var pageSize = 5;
-            ViewBag.PageCount = Math.Ceiling(filteredPosts.Count * 1.0 / pageSize);
-            ViewBag.CurrentPage = pageNo;
+            var pageSize = 10;
+
+            ViewBag.PageSize = pageSize;
+            ViewBag.PageCount = Convert.ToInt32(Math.Ceiling(filteredPosts.Count * 1.0 / pageSize));
+
+            if (pageNo < 1)
+                pageNo = 1;
 
             if (pageNo > ViewBag.PageCount)
-                pageNo = ViewBag.PageCount + 1;
+                pageNo = ViewBag.PageCount;
+
+            ViewBag.RightPageIndex = Convert.ToInt32(Math.Min(pageNo + pageSize, ViewBag.PageCount));
+            ViewBag.LeftPageIndex = ViewBag.RightPageIndex - pageSize;
+            ViewBag.VisibleRightIndex = Convert.ToInt32(Math.Min(ViewBag.RightPageIndex, ViewBag.PageCount));
+            ViewBag.VisibleLeftPageIndex = Convert.ToInt32(Math.Max(ViewBag.LeftPageIndex, 1));
+
+            ViewBag.CurrentPage = pageNo;
 
             var pagedPosts = filteredPosts.Skip((pageNo - 1) * pageSize).Take(pageSize);
+            var subcategories = new List<string> { selectedSubcategory };
+            var locales = new List<string> { selectedLocale };
+
+            if (!string.IsNullOrEmpty(category))
+                subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(category)
+                    .Select(s => s.SubCategory)
+                    .OrderBy(l => l)
+                    .ToList());
             
+            if (!string.IsNullOrEmpty(area))
+                locales.AddRange(LocationOps.GetLocalesByArea(area)
+                    .Select(l => l.Locale)
+                    .OrderBy(l => l)
+                    .ToList());
+
             return View(new PostFilterViewModel
             {
+                Query = query,
                 Posts = pagedPosts.ToList(),
-                Categories = new SelectList(Categories, "Please Select a Category"),
-                Areas = new SelectList(Areas, "Please Select an Area"),
-                SubCategories = null,
-                Locales = null
+                Categories = new SelectList(Categories, selectedCategory),
+                Areas = new SelectList(Areas, selectedArea),
+                SubCategories = new SelectList(subcategories, selectedSubcategory),
+                Locales = new SelectList(locales, selectedLocale)
             });
         }
+
+        #region Ajax Methods
+
+        [HttpPost]
+        public ActionResult GetSubCategoriesByCategory(string category)
+        {
+            var subCategories = PostTypesOps.GetSubCategoriesByCategory(category);
+            var subCategorySelectItems = subCategories
+                .Select(l => new SelectListItem {
+                    Value = l.Id.ToString(),
+                    Text = l.SubCategory})
+                .ToList();
+
+//            var subCategorySelectList = new SelectList(subCategorySelectItems,
+//                "Value", "Text");
+
+            return Json(subCategorySelectItems);
+        }
+
+        [HttpPost]
+        public ActionResult GetLocalesByArea(string area)
+        {
+            var locales = LocationOps.GetLocalesByArea(area);
+            var localeSelectItems = locales
+                .Select(l => new SelectListItem {
+                    Value = l.Id.ToString(),
+                    Text = l.Locale})
+                .ToList();
+
+//            var localesSelectList = new SelectList(localeSelectItems,
+//                "Value", "Text");
+
+            return Json(localeSelectItems);
+        }
+
+        #endregion
 
         // TODO: Remove this. The cookie should be set from the home page
         [HttpGet]

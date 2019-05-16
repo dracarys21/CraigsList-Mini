@@ -99,41 +99,6 @@ namespace UI.Controllers
             }
         }
 
-        #region Ajax Methods
-
-        [HttpPost]
-        public ActionResult GetSubCategoriesByCategory(string category)
-        {
-            var subCategories = PostTypesOps.GetSubCategoriesByCategory(category);
-            var subCategorySelectItems = subCategories
-                .Select(l => new SelectListItem {
-                    Value = l.Id.ToString(),
-                    Text = l.SubCategory})
-                .ToList();
-
-            var subCategorySelectList = new SelectList(subCategorySelectItems,
-                "Value", "Text");
-
-            return Json(subCategorySelectList);
-        }
-
-        [HttpPost]
-        public ActionResult GetLocalesByArea(string area)
-        {
-            var locales = LocationOps.GetLocalesByArea(area);
-            var localeSelectItems = locales
-                .Select(l => new SelectListItem {
-                    Value = l.Id.ToString(),
-                    Text = l.Locale})
-                .ToList();
-
-            var localesSelectList = new SelectList(localeSelectItems,
-                "Value", "Text");
-
-            return Json(localesSelectList);
-        }
-
-        #endregion
         // GET: Posts/Edit/5
         public ActionResult Edit(int? id)
         {

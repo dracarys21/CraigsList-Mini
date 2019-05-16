@@ -91,7 +91,7 @@
         function GetSubCategories(_category) {
             var procemessage = "<option value='0'> Please wait...</option>";
             $("#SelectedSubcategory").html(procemessage).show();
-            var url = "@Url.Action("GetSubCategoriesByCategory", "Posts")";
+            var url = "@Url.Action("GetSubCategoriesByCategory", "PostFilter")";
 
             $.ajax({
                 url: url,
@@ -114,7 +114,7 @@
         function GetLocales(_area) {
             var procemessage = "<option value='0'> Please wait...</option>";
             $("#SelectedLocale").html(procemessage).show();
-            var url = "@Url.Action("GetLocalesByArea", "Posts")";
+            var url = "@Url.Action("GetLocalesByArea", "PostFilter")";
 
             $.ajax({
                 url: url,

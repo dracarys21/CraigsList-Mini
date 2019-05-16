@@ -7,8 +7,9 @@ namespace DB.Database
 {
     public static class PostFilter
     {
-        public static List<Post> FilterPost(string area = "", string locale = "",
-            string category = "", string subCategory = "", string query = "")
+        public static List<Post> FilterPost(string area = "",
+            string locale = "", string category = "",
+            string subcategory = "", string query = "")
         {
             using (var db = new ApplicationDbContext())
             {
@@ -17,7 +18,7 @@ namespace DB.Database
                     .Include("PostType");
 
                 var filteredPosts = PostActions.FilterPost(posts, area,
-                    locale, category, subCategory, query);
+                    locale, category, subcategory, query);
 
                 return filteredPosts.ToList();
             }
