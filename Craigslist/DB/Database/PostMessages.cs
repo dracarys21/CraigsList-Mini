@@ -6,26 +6,33 @@ using Data.Models.Data;
 using Models;
 using System.Data;
 using BizLogic.Logic;
+using System.Data.Entity;
 
 namespace DB.Database
 {
     public class PostMessages
     {
-        public void CreateMessage(Post post, ApplicationUser createdBy, string userMessage)
+        public static void CreateMessage(int postId, string userId, string userMessage)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    
+                    Post post = UserPost.GetPostById(postId);
+                    ApplicationUser author =  (from user in db.Users
+                                                where user.Id.Equals(userId)
+                                                select user).FirstOrDefault();
+                    ApplicationUser receiver = (from user in db.Users
+                                              where user.Id.Equals(post.Author.Id)
+                                              select user).FirstOrDefault();
                     var message = new Message
                     {
                         Body = userMessage,
-                        SendTo = post.Author,
-                        CreatedBy = createdBy,
+                        SendTo = receiver ,
+                        CreatedBy = author,
                         CreateDate = DateTime.Now,
                     };
-  
+                    
                     post.Messages.Add(message);
                     db.Messages.Add(message);
                     db.SaveChanges();
@@ -40,14 +47,19 @@ namespace DB.Database
             }
         }
 
-        public List<Message> GetRecentMessagesByUser(ApplicationUser user)
+        public static List<Message> GetRecentMessagesByUser(string userid)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
+
+                    ApplicationUser receiver = (from user in db.Users
+                                            where user.Id.Equals(userid)
+                                            select user).FirstOrDefault();
+
                     var messages = from message in db.Messages
-                        where message.CreatedBy.Equals(user)
+                        where message.SendTo.Id.Equals(receiver.Id)
                         orderby message.CreateDate descending
                         select message;
 
@@ -61,19 +73,18 @@ namespace DB.Database
             }
         }
         
-        public List<Message> GetMessageByPost(Post post)
+        public static List<Message> GetMessagesByPost(int postId)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
                     var messages = from p in db.Posts
-                        where p.Equals(post)
+                        where p.Id.Equals(postId)
                         select p.Messages;
 
-                    return messages
-                        .Select(i => i.FirstOrDefault())
-                        .OrderByDescending(i => i.CreateDate).ToList();
+                    return messages.FirstOrDefault().OrderByDescending(i => i.CreateDate).ToList();
+                       
                 }
             }
             catch(Exception e)
@@ -83,7 +94,7 @@ namespace DB.Database
             }
         } 
 
-        public void DeleteResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        public static void DeleteResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
         {
             try
             {
@@ -103,7 +114,7 @@ namespace DB.Database
 
         }
 
-        public void ReadResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        public static void ReadResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
         {
             try
             {

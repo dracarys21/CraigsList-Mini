@@ -12,7 +12,7 @@ namespace Data.Models
         [EmailAddress]
         public string Email { get; set; }
         public string UserName { get; set; }
-
+        public bool IsAdmin { get; set; }
         public string UserId { get; set; }
     }
 }

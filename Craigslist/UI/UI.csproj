@@ -173,6 +173,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\PostsController.cs" />
     <Compile Include="Controllers\PostTypesController.cs" />
     <Compile Include="Controllers\PostFilterController.cs" />
@@ -264,6 +265,8 @@
     <Content Include="Views\Locations\DeleteArea.cshtml" />
     <Content Include="Views\PostTypes\DeleteCategory.cshtml" />
     <Content Include="Views\PostFilter\Index.cshtml" />
+    <Content Include="Views\Message\CreateMessage.cshtml" />
+    <Content Include="Views\Message\Inbox.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
