@@ -18,7 +18,7 @@
                     {
                         @class = "form-control",
                         @id = "area",
-                        @onchange = "document.getElementById('search').submit();"
+                        @onchange = "javascript:postArea(this.value);"
                     })
             </div>
         </div>
@@ -41,7 +41,7 @@
                 {
                     @class = "form-control",
                     @id = "category",
-                    @onchange = "document.getElementById('search').submit();"
+                    @onchange = "javascript:postCategory(this.value);"
                 })
         </div>
         <div class="col">
@@ -133,6 +133,16 @@
                 pageNumber = action;
 
             $('#pageAction').val(pageNumber);
+            document.getElementById('search').submit();
+        }
+
+        function postArea(area) {
+            $('#locale').val('Please Select a Locale');
+            document.getElementById('search').submit();
+        }
+
+        function postCategory(category) {
+            $('#subcategory').val('Please Select a Subcategory');
             document.getElementById('search').submit();
         }
     </script>

@@ -206,5 +206,17 @@ namespace DB.Database
             }
         }
 
+        public static string GetCategoryBySubcategoryName(string subcategory)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                var category = from postType in db.PostTypes
+                    where postType.Active
+                    && postType.SubCategory.ToLower().Equals(subcategory.ToLower())
+                    select postType.Category;
+
+                return category.ToString();
+            }
+        }
     }
 }

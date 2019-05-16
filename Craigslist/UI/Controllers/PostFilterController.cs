@@ -183,6 +183,12 @@ namespace UI.Controllers
             var subcategories = new List<string> { selectedSubcategory };
             var locales = new List<string> { selectedLocale };
 
+            if (string.IsNullOrEmpty(actualCategory) && !string.IsNullOrEmpty(actualSubcategory))
+                category = PostTypesOps.GetCategoryBySubcategoryName(actualSubcategory);
+            
+            if (string.IsNullOrEmpty(actualArea) && !string.IsNullOrEmpty(actualLocale))
+                area = LocationOps.GetAreaByLocale(actualLocale);
+
             if (!string.IsNullOrEmpty(category))
                 subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(category)
                     .Select(s => s.SubCategory)
@@ -194,6 +200,7 @@ namespace UI.Controllers
                     .Select(l => l.Locale)
                     .OrderBy(l => l)
                     .ToList());
+
             
             return View(new PostFilterViewModel
             {
