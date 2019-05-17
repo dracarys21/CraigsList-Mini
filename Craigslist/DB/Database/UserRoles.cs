@@ -45,15 +45,18 @@ namespace DB.Database
                 {
                     string admin_roleid = GetAdminRoleId();
                     var users = from u in db.Users
-                                where u.Roles.FirstOrDefault().RoleId != admin_roleid
                                 select u;
-                    List<AdminUserDisplayViewModel> icollection = new List<AdminUserDisplayViewModel>();
+                    List < AdminUserDisplayViewModel > icollection = new List<AdminUserDisplayViewModel>();
                     AdminUserDisplayViewModel t;
+                    var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
+
                     foreach (var us in users)
                     {
                         t = new AdminUserDisplayViewModel();
                         t.Email = us.Email;
                         t.UserName = us.UserName;
+                        if (userManager.GetRoles(us.Id).Contains("Admin"))
+                            t.IsAdmin = true;
                         t.UserId = us.Id;
                         icollection.Add(t);
                     }

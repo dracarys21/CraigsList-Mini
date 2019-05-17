@@ -105,7 +105,6 @@
     <Compile Include="Database\UserManagement.cs" />
     <Compile Include="Database\UserPost.cs" />
     <Compile Include="Database\UserRoles.cs" />
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
