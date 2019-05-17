@@ -93,24 +93,29 @@
             </div>
         </div>
 
-        <div class="col-sm-2 border border-info" style="background-color: gainsboro; padding:10px">
+        <div class="col-sm-2 border border-info" style="background-color: gainsboro; padding: 10px">
+
+            <div class="pb-3">
+                @Html.ActionLink("Create Post", "Create", "Posts", null, new {@class = "btn btn-primary"})
+            </div>
+
             <div class="accordion" id="accordionExample">
                 <div class="card">
                     <div class="card-header" id="headingOne">
                         <h6>
-                            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align:center; height: 20px; padding-top: 1%;">
+                            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align: center; height: 20px; padding-top: 1%;">
                                 All Locations
                             </button>
                         </h6>
                     </div>
                     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                         <div class="card-body">
-                            <div style="display:block;">
+                            <div style="display: block;">
 
                                 @foreach (var area in Model.Areas)
                                 {
                                     <div class="container">
-                                        <a href="@Url.Action("Index", new { area })" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
+                                        <a href="@Url.Action("Index", new {area})" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
                                             @area
                                         </a>
                                     </div>
