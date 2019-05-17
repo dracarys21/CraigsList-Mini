@@ -10,7 +10,7 @@ namespace UI.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index(string area = "", string locale = "",
+        public ActionResult Index(string area = "New York", string locale = "",
             string category = "", string subcategory = "")
         {
 

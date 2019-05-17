@@ -37,6 +37,7 @@ namespace UI.Controllers
 
             var viewModel = new PostViewModel
             {
+                Id = id.Value,
                 Title = post.Title,
                 Body = post.Body,
                 CreateDate = post.CreateDate.ToShortDateString()
