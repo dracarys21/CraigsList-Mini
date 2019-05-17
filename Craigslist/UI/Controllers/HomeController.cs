@@ -50,6 +50,7 @@ namespace UI.Controllers
 
             return View(new HomePageViewModel(activeCategories)
             {
+                Area = area,
                 Areas = areas,
                 Locales = locales
             });
