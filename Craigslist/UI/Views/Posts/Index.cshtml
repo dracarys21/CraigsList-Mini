@@ -1,7 +1,8 @@
-﻿@model IEnumerable<Data.Models.Data.Post>
+﻿@using System.Diagnostics.Eventing.Reader
+@model IEnumerable<Data.Models.Data.Post>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Posts";
 }
 
 <h2>Index</h2>
@@ -9,7 +10,7 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
+<table class="table table-striped">
     <tr>
         <th>
             @Html.DisplayNameFor(model => model.Title)
@@ -23,6 +24,9 @@
         <th>
             @Html.DisplayNameFor(model => model.ExpirationDate)
         </th>
+        <th>
+            Status
+        </th>
         <th></th>
     </tr>
 
@@ -35,16 +39,45 @@
             @Html.DisplayFor(modelItem => item.Body)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.CreateDate)
+            <p>@item.CreateDate.ToShortDateString()</p>
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.ExpirationDate)
+            @{
+                if (item.ExpirationDate.HasValue)
+                {
+            <p>@item.ExpirationDate.Value.ToShortDateString()</p>
+                }
+            }
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })|
-            @Html.ActionLink("View Messages", "ViewPostMessages", "Message",new {postId=item.Id},null)
+            @{
+                if (!item.ExpirationDate.HasValue)
+                {
+                    <p>Draft</p>
+                }
+                else if (item.ExpirationDate.HasValue && item.ExpirationDate.Value.CompareTo(DateTime.Today) < 0)
+                {
+                    <p>Expired</p>
+                }
+                else
+                {
+                    <p>Unexpired</p>
+                }
+            }
+        </td>
+        <td style="width: 180px">
+            @if (item.ExpirationDate.HasValue && item.ExpirationDate.Value.CompareTo(DateTime.Today) < 0)
+            {
+                @Html.ActionLink("Details", "Details", new { id = item.Id })
+            }
+            else
+            {
+                <span>
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </span>
+            }
         </td>
     </tr>
 }

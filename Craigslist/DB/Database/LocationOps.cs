@@ -51,7 +51,7 @@ namespace DB.Database
             }
         }
 
-        public static ICollection<Location> GetDistinctLocation()
+        public static ICollection<Location> GetDistinctAreas()
         {
             using (var db = new ApplicationDbContext())
             {
@@ -213,5 +213,25 @@ namespace DB.Database
             }
         }
 
+        public static string GetAreaByLocale(string locale)
+        { 
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var area = from location in db.Locations
+                        where location.Active
+                              && location.Locale.ToLower().Equals(locale.ToLower())
+                        select location.Area;
+
+                    return area.ToList().FirstOrDefault();;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }

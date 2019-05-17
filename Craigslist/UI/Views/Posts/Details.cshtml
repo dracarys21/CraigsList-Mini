@@ -1,7 +1,7 @@
-﻿@model Data.Models.Data.Post
+﻿@model Data.Models.PostViewModel
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Post Details";
 }
 
 <h2>Details</h2>
@@ -34,34 +34,10 @@
             @Html.DisplayFor(model => model.CreateDate)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.LastModifiedDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.LastModifiedDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.ExpirationDate)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.ExpirationDate)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Deleted)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Deleted)
-        </dd>
-
     </dl>
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index") | 
-    @Html.ActionLink("Respond", "CreateMessage", "Message", new { postId = Model.Id },null)
+    @Html.ActionLink("Back to List", "Index", new { returnUri = Model.ReturnUri }) |
+    @Html.ActionLink("Respond", "CreateMessage", "Message", new { postId = Model.Id }, null)
 </p>

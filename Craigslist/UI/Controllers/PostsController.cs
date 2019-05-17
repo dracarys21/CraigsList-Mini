@@ -5,37 +5,56 @@ using System.Net;
 using System.Web.Mvc;
 using Data.Models;
 using DB.Database;
-using Data.Models.Data;
-using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
 {
-    [Authorize]
     public class PostsController : Controller
     {
         // GET: Posts
-        public ActionResult Index(string query = "")
+        public ActionResult Index(string returnUri = "")
         {
-            return View(UserPost.GetPostsByUserId(User.Identity.GetUserId()));
+            if (!string.IsNullOrEmpty(returnUri))
+                return Redirect(returnUri);
+
+            if (User.Identity.IsAuthenticated)
+                return View(UserPost.GetPostsByUserId(User.Identity.GetUserId()));
+            else
+                return RedirectToAction("Login", "Account");
         }
 
         // GET: Posts/Details/5
+        [AllowAnonymous]
         public ActionResult Details(int? id)
         {
             if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var post = UserPost.GetPostById(id.Value);
-
+            
             if (post == null)
                 return HttpNotFound();
-            
-            return View(post);
+
+            var viewModel = new PostViewModel
+            {
+                Id = id.Value,
+                Title = post.Title,
+                Body = post.Body,
+                CreateDate = post.CreateDate.ToShortDateString()
+            };
+
+            if (Request.UrlReferrer != null
+                && !string.IsNullOrEmpty(Request.UrlReferrer.PathAndQuery)
+                && Request.UrlReferrer.PathAndQuery.Contains("PostFilter"))
+                viewModel.ReturnUri = Request.UrlReferrer.PathAndQuery;
+
+            return View(viewModel);
         }
 
         // GET: Posts/Create
-        public ActionResult Create()
+        [Authorize]
+        public ActionResult Create(string area = "", string locale = "",
+            string category = "", string subcategory = "")
         {
             var locations = LocationOps.GetActiveLocationsList();
             var postTypes = PostTypesOps.GetActivePostTypesList();
@@ -60,16 +79,38 @@ namespace UI.Controllers
                 .Select(l => l.Key)
                 .ToList());
 
+            var subcategories = new List<string> { "Please Select a Category" };
+            var locales = new List<string> { "Please Select a Locale" };
+
+            if (string.IsNullOrEmpty(category) && !string.IsNullOrEmpty(subcategory))
+                category = PostTypesOps.GetCategoryBySubcategoryName(subcategory);
+            
+            if (string.IsNullOrEmpty(area) && !string.IsNullOrEmpty(locale))
+                area = LocationOps.GetAreaByLocale(locale);
+
+            if (!string.IsNullOrEmpty(category))
+                subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(category)
+                    .Select(s => s.SubCategory)
+                    .OrderBy(l => l)
+                    .ToList());
+            
+            if (!string.IsNullOrEmpty(area))
+                locales.AddRange(LocationOps.GetLocalesByArea(area)
+                    .Select(l => l.Locale)
+                    .OrderBy(l => l)
+                    .ToList());
+
             return View(new PostViewModel
             {
-                Areas = new SelectList(areas, "Please Select an Area"),
-                Locales = null,
-                Categories = new SelectList(categories, "Please Select a Category"),
-                SubCategories = null
+                Areas = new SelectList(areas, string.IsNullOrEmpty(area) ? "Please Select an Area" : area),
+                Locales = new SelectList(locales, string.IsNullOrEmpty(locale) ? "Please Select a Locale" : locale),
+                Categories = new SelectList(categories,  string.IsNullOrEmpty(category) ? "Please Select a Category" : category),
+                SubCategories = new SelectList(subcategories,  string.IsNullOrEmpty(subcategory) ? "Please Select a Subcategory" : subcategory)
             });
         }
 
         // POST: Posts/Create
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(
@@ -99,42 +140,8 @@ namespace UI.Controllers
             }
         }
 
-        #region Ajax Methods
-
-        [HttpPost]
-        public ActionResult GetSubCategoriesByCategory(string category)
-        {
-            var subCategories = PostTypesOps.GetSubCategoriesByCategory(category);
-            var subCategorySelectItems = subCategories
-                .Select(l => new SelectListItem {
-                    Value = l.Id.ToString(),
-                    Text = l.SubCategory})
-                .ToList();
-
-            var subCategorySelectList = new SelectList(subCategorySelectItems,
-                "Value", "Text");
-
-            return Json(subCategorySelectList);
-        }
-
-        [HttpPost]
-        public ActionResult GetLocalesByArea(string area)
-        {
-            var locales = LocationOps.GetLocalesByArea(area);
-            var localeSelectItems = locales
-                .Select(l => new SelectListItem {
-                    Value = l.Id.ToString(),
-                    Text = l.Locale})
-                .ToList();
-
-            var localesSelectList = new SelectList(localeSelectItems,
-                "Value", "Text");
-
-            return Json(localesSelectList);
-        }
-
-        #endregion
         // GET: Posts/Edit/5
+        [Authorize]
         public ActionResult Edit(int? id)
         {
             if (!id.HasValue)
@@ -144,17 +151,30 @@ namespace UI.Controllers
 
             if (post == null)
                 return HttpNotFound();
+
+            if ((post.ExpirationDate.HasValue && post.ExpirationDate.Value.CompareTo(DateTime.Today) < 0) || post.Deleted)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             
             return View(post);
         }
 
         // POST: Posts/Edit/5
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, [Bind(Include = "Title,Body")] PostViewModel post)
         {
             if (ModelState.IsValid)
             {
+                var postDb = UserPost.GetPostById(id);
+
+                if ((postDb.ExpirationDate.HasValue && postDb.ExpirationDate.Value.CompareTo(DateTime.Today) < 0) || postDb.Deleted)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
                 UserPost.UpdatePost(User.Identity.GetUserId(), id, post.Title, post.Body, out var errors);
 
                 if (errors.Length > 0)
@@ -166,6 +186,7 @@ namespace UI.Controllers
         }
 
         // GET: Posts/Delete/5
+        [Authorize]
         public ActionResult Delete(int? id)
         {
             if (!id.HasValue)
@@ -180,6 +201,7 @@ namespace UI.Controllers
         }
 
         // POST: Posts/Delete/5
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

@@ -51,13 +51,13 @@ namespace BizLogic.Logic
             if (!string.IsNullOrEmpty(area) || !string.IsNullOrEmpty(locale))
                 filteredPosts = from post in filteredPosts
                     where (string.IsNullOrEmpty(area) || post.Location.Area.ToLower().Equals(area.ToLower()))
-                        && (string.IsNullOrEmpty(locale) || post.Location.Locale.ToLower().Equals(locale.ToLower()))
+                          && (string.IsNullOrEmpty(locale) || post.Location.Locale.ToLower().Equals(locale.ToLower()))
                     select post;
 
             if (!string.IsNullOrEmpty(category) || !string.IsNullOrEmpty(subCategory))
                 filteredPosts = from post in filteredPosts
                     where (string.IsNullOrEmpty(category) || post.PostType.Category.ToLower().Equals(category.ToLower()))
-                        && (string.IsNullOrEmpty(subCategory) || post.PostType.SubCategory.ToLower().Equals(subCategory.ToLower()))
+                          && (string.IsNullOrEmpty(subCategory) || post.PostType.SubCategory.ToLower().Equals(subCategory.ToLower()))
                     select post;
 
             if (!string.IsNullOrEmpty(query))

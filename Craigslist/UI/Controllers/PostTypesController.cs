@@ -14,7 +14,7 @@ namespace UI.Controllers
         // GET: PostTypes
         public ActionResult Index()
         {
-            return View(PostTypesOps.GetDistinctPostTypes());
+            return View(PostTypesOps.GetDistinctCategories());
         }
 
         public ActionResult ListSubCategories(string category)

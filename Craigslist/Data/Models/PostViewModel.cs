@@ -35,6 +35,8 @@ namespace Data.Models
 
         public string SelectedSubcategory { get; set; }
 
+        public string ReturnUri { get; set; }
+
         public SelectList Areas { get; set; }
 
         public SelectList Locales { get; set; }
