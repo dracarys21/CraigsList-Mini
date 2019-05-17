@@ -96,26 +96,7 @@ namespace DB.Database
                 throw;
             }
         } 
-
-        public static Message GetMessageById(int id)
-        {
-            try
-            {
-                using (var db = new ApplicationDbContext())
-                {
-                    var message = db.Messages.Include("CreatedBy").Include("SendTo")
-                        .FirstOrDefault(p => p.Id.Equals(id)
-                                             && !p.Deleted);
-                    return message;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
+        
         public static void DeleteResponse(int messageId,string userId, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
         {
             try
@@ -165,5 +146,24 @@ namespace DB.Database
             }
 
         }
+        public static Message GetMessageById(int id)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var message = db.Messages.Include("CreatedBy").Include("SendTo")
+                        .FirstOrDefault(p => p.Id.Equals(id)
+                                             && !p.Deleted);
+                    return message;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
     }
 }
