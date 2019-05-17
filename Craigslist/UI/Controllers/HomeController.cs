@@ -46,7 +46,10 @@ namespace UI.Controllers
 
             if (!string.IsNullOrEmpty(area))
                 locales = LocationOps.GetLocalesByArea(area)
-                    .Select(l => l.Locale).ToList();
+                    .Select(l => l.Locale)
+                    .ToList();
+
+            locales.Sort();
 
             return View(new HomePageViewModel(activeCategories)
             {
