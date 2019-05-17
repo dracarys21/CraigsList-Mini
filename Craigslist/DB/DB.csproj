@@ -105,6 +105,11 @@
     <Compile Include="Database\UserManagement.cs" />
     <Compile Include="Database\UserPost.cs" />
     <Compile Include="Database\UserRoles.cs" />
+    <Compile Include="Migrations\201905170054207_Initial.cs" />
+    <Compile Include="Migrations\201905170054207_Initial.Designer.cs">
+      <DependentUpon>201905170054207_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -136,7 +141,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <EmbeddedResource Include="Migrations\201905170054207_Initial.resx">
+      <DependentUpon>201905170054207_Initial.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
