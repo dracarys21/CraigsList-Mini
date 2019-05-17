@@ -1,0 +1,159 @@
+﻿@model Data.Models.PostFilterViewModel
+
+@{
+    ViewBag.Title = "Post Filter";
+}
+
+@using (Html.BeginForm("Index", "PostFilter", FormMethod.Get, new { id = "search" }))
+{
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Filters</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Areas, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.Area,
+                            Model.Areas,
+                            new
+                            {
+                                @class = "form-control",
+                                @id = "area",
+                                @onchange = "javascript:postArea(this.value);"
+                            })
+                    </div>
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.Locales, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Locale,
+                        Model.Locales,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "locale",
+                            @onchange = "document.getElementById('search').submit();"
+                        })
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Category,
+                        Model.Categories,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "category",
+                            @onchange = "javascript:postCategory(this.value);"
+                        })
+                </div>
+                <div class="col">
+                    @Html.LabelFor(model => model.SubCategories, htmlAttributes: new { @class = "control-label" })
+                    @Html.DropDownListFor(model => model.Subcategory,
+                        Model.SubCategories,
+                        new
+                        {
+                            @class = "form-control",
+                            @id = "subcategory",
+                            @onchange = "document.getElementById('search').submit();"
+                        })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3">
+                    @Html.EditorFor(model => model.Query, new
+                    {
+                        htmlAttributes = new
+                        {
+                            @class = "form-control",
+                            @id = "query",
+                            @placeholder = "Search title or body"
+                        }
+                    })
+                </div>
+                <div class="col">
+                    <button class="btn btn-success" type="submit">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Html.HiddenFor(m => m.PageAction, new { id = "pageAction" })
+
+    <h3>Search Results</h3>
+    <table class="table table-striped">
+        @foreach (var item in Model.Posts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    <span>
+                        @Html.ActionLink(item.Title, "Details", new { id = item.Id }, new { })
+
+                        (@Html.DisplayFor(modelItem => item.Locale))
+                    </span>
+
+                </td>
+            </tr>
+        }
+    </table>
+
+    <div class="row">
+        <div class="col">
+            @{
+                var prevListStyle = ViewBag.CurrentPage > 1 ? "page-item" : "page-item disabled";
+                var nextListStyle = ViewBag.CurrentPage == ViewBag.PageCount ? "page-item disabled" : "page-item";
+            }
+            <ul class="pagination">
+                <li class="@prevListStyle">
+                    <a class="page-link" href="javascript:;" onclick="setPageAction('prev');">Previous</a>
+                </li>
+                @for (int i = Math.Max(ViewBag.CurrentPage - (ViewBag.PageSize / 2), 1); i < Math.Min(ViewBag.CurrentPage + (ViewBag.PageSize / 2), ViewBag.PageCount + 1); i++)
+                {
+                    var listStyle = ViewBag.CurrentPage == i ? "page-item active" : "page-item";
+
+                    <li class="@listStyle">
+                        <a class="page-link" href="javascript:;" onclick="setPageAction(@i.ToString());">@i.ToString()</a>
+                    </li>
+                }
+                <li class="@nextListStyle">
+                    <a class="page-link" href="javascript:;" onclick="setPageAction('next');">Next</a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script language="javascript" type="text/javascript">
+        function setPageAction(action) {
+            var pageNumber = @ViewBag.CurrentPage;
+            if (action === 'next')
+                pageNumber++;
+            else if (action === 'prev')
+                pageNumber--;
+            else
+                pageNumber = action;
+
+            $('#pageAction').val(pageNumber);
+            document.getElementById('search').submit();
+        }
+
+        function postArea(area) {
+            $('#locale').val('Please Select a Locale');
+            document.getElementById('search').submit();
+        }
+
+        function postCategory(category) {
+            $('#subcategory').val('Please Select a Subcategory');
+            document.getElementById('search').submit();
+        }
+    </script>
+}

@@ -2,40 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Data.Models.Data;
 using Models;
-using Microsoft.AspNet.Identity;
 using System.Data;
-using System.Data.Entity;
-using System.Net;
-using System.Web;
 using BizLogic.Logic;
+using System.Data.Entity;
+using Data.Models;
+using System.Data.Entity.Migrations;
 
 namespace DB.Database
 {
-    class PostMessages
+    public class PostMessages
     {
-        public void CreateMessage(Post Post, ApplicationUser CreatedBy, string Message_String)
+        public static void CreateMessage(int postId, string userId, string userMessage)
         {
             try
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    
+                    Post post = UserPost.GetPostById(postId);
+                    ApplicationUser author =  (from user in db.Users
+                                                where user.Id.Equals(userId)
+                                                select user).FirstOrDefault();
+                    ApplicationUser receiver = (from user in db.Users
+                                              where user.Id.Equals(post.Author.Id)
+                                              select user).FirstOrDefault();
                     var message = new Message
                     {
-                        Body = Message_String,
-                        SendTo = Post.Author,
-                        CreatedBy= CreatedBy,
+                        Body = userMessage,
+                        SendTo = receiver,
+                        CreatedBy = author,
                         CreateDate = DateTime.Now,
-              
+                        postId = postId,
+                        Deleted = false
                     };
-
                     
-  
-                    Post.Messages.Add(message);
-                    db.Message.Add(message);
+                    post.Messages.Add(message);
+                    db.Messages.Add(message);
                     db.SaveChanges();
                 }
             }
@@ -47,36 +50,45 @@ namespace DB.Database
                 throw;
             }
         }
-        public List<Message> GetRecentMessagesByUser(ApplicationUser User)
+
+        public static List<Message> GetRecentMessagesByUser(string userid)
         {
             try
             {
-                List<Message> Messages = new List<Message>();
-                UserPost p = new UserPost();
-                List<Post> posts = p.GetPostsByUser(User);
-                foreach (var post in posts)
+                using (var db = new ApplicationDbContext())
                 {
-                    foreach (var message in post.Messages)
-                    {
-                        Messages.Add(message);
-                    }
 
+                    ApplicationUser receiver = (from user in db.Users
+                                            where user.Id.Equals(userid)
+                                            select user).FirstOrDefault();
+
+                    var messages = from message in db.Messages
+                                   where message.SendTo.Id.Equals(receiver.Id) && message.Deleted == false
+                        orderby message.CreateDate descending
+                        select message;
+                    return messages.ToList();
                 }
-                return Messages.OrderByDescending(i => i.CreateDate).ToList();
             }
             catch(Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
         
-        public List<Message> GetMessageByPost(Post Post)
+        public static List<Message> GetMessagesByPost(int postId)
         {
             try
             {
-                return Post.Messages.OrderByDescending(i => i.CreateDate).ToList();
+                using (var db = new ApplicationDbContext())
+                {
+                    var messages = from p in db.Posts
+                        where p.Id.Equals(postId)
+                         select p.Messages;
+
+                    return messages.FirstOrDefault().OrderByDescending(i => i.CreateDate).Where(m => m.Deleted==false).ToList();
+                       
+                }
             }
             catch(Exception e)
             {
@@ -84,18 +96,28 @@ namespace DB.Database
                 throw;
             }
         } 
-
-        public void DeleteResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        
+        public static void DeleteResponse(int messageId,string userId, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
         {
             try
             {
-                errors = new StringBuilder();
-                if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
+                using (var db = new ApplicationDbContext())
                 {
-                    errors.Append("Post ");
-                    return;
-                }
-                message.Deleted = true;
+                    errors = new StringBuilder();
+                    Message message = GetMessageById(messageId);
+                    ApplicationUser user = UserRoles.GetUserById(userId);
+                    Post post = UserPost.GetPostById(message.postId);
+
+                    if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
+                    {
+                        errors.Append("Can't delete Message");
+                        return;
+                    }
+                    message.Deleted = true;
+                    db.Messages.AddOrUpdate(message);
+                    db.SaveChanges();
+                } 
+                
             }
             catch(Exception e)
             {
@@ -105,7 +127,7 @@ namespace DB.Database
 
         }
 
-        public void ReadResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        public static void ReadResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
         {
             try
             {
@@ -124,5 +146,24 @@ namespace DB.Database
             }
 
         }
+        public static Message GetMessageById(int id)
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    var message = db.Messages.Include("CreatedBy").Include("SendTo")
+                        .FirstOrDefault(p => p.Id.Equals(id)
+                                             && !p.Deleted);
+                    return message;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
     }
 }

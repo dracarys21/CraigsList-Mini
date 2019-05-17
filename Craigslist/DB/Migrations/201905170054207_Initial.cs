@@ -3,7 +3,7 @@ namespace DB.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialCommit : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -20,30 +20,25 @@ namespace DB.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.Posts",
+                "dbo.Messages",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Title = c.String(nullable: false, maxLength: 140),
                         Body = c.String(nullable: false),
                         CreateDate = c.DateTime(nullable: false),
-                        LastModifiedDate = c.DateTime(nullable: false),
-                        ExpirationDate = c.DateTime(),
                         Deleted = c.Boolean(nullable: false),
-                        Author_Id = c.String(maxLength: 128),
-                        LastModifiedBy_Id = c.String(maxLength: 128),
-                        Location_Id = c.Int(nullable: false),
-                        PostType_Id = c.Int(nullable: false),
+                        Read = c.Boolean(nullable: false),
+                        CreatedBy_Id = c.String(nullable: false, maxLength: 128),
+                        SendTo_Id = c.String(nullable: false, maxLength: 128),
+                        Post_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.Author_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.LastModifiedBy_Id)
-                .ForeignKey("dbo.Locations", t => t.Location_Id, cascadeDelete: true)
-                .ForeignKey("dbo.PostTypes", t => t.PostType_Id, cascadeDelete: true)
-                .Index(t => t.Author_Id)
-                .Index(t => t.LastModifiedBy_Id)
-                .Index(t => t.Location_Id)
-                .Index(t => t.PostType_Id);
+                .ForeignKey("dbo.AspNetUsers", t => t.CreatedBy_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.SendTo_Id)
+                .ForeignKey("dbo.Posts", t => t.Post_Id)
+                .Index(t => t.CreatedBy_Id)
+                .Index(t => t.SendTo_Id)
+                .Index(t => t.Post_Id);
             
             CreateTable(
                 "dbo.AspNetUsers",
@@ -75,7 +70,7 @@ namespace DB.Migrations
                         ClaimValue = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserId)
                 .Index(t => t.UserId);
             
             CreateTable(
@@ -87,7 +82,7 @@ namespace DB.Migrations
                         UserId = c.String(nullable: false, maxLength: 128),
                     })
                 .PrimaryKey(t => new { t.LoginProvider, t.ProviderKey, t.UserId })
-                .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserId)
                 .Index(t => t.UserId);
             
             CreateTable(
@@ -98,10 +93,36 @@ namespace DB.Migrations
                         RoleId = c.String(nullable: false, maxLength: 128),
                     })
                 .PrimaryKey(t => new { t.UserId, t.RoleId })
-                .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
-                .ForeignKey("dbo.AspNetRoles", t => t.RoleId, cascadeDelete: true)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserId)
+                .ForeignKey("dbo.AspNetRoles", t => t.RoleId)
                 .Index(t => t.UserId)
                 .Index(t => t.RoleId);
+            
+            CreateTable(
+                "dbo.Posts",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Title = c.String(nullable: false, maxLength: 140),
+                        Body = c.String(nullable: false),
+                        CreateDate = c.DateTime(nullable: false),
+                        LastModifiedDate = c.DateTime(nullable: false),
+                        ExpirationDate = c.DateTime(),
+                        Deleted = c.Boolean(nullable: false),
+                        Author_Id = c.String(maxLength: 128),
+                        LastModifiedBy_Id = c.String(maxLength: 128),
+                        Location_Id = c.Int(nullable: false),
+                        PostType_Id = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.Author_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.LastModifiedBy_Id)
+                .ForeignKey("dbo.Locations", t => t.Location_Id)
+                .ForeignKey("dbo.PostTypes", t => t.PostType_Id)
+                .Index(t => t.Author_Id)
+                .Index(t => t.LastModifiedBy_Id)
+                .Index(t => t.Location_Id)
+                .Index(t => t.PostType_Id);
             
             CreateTable(
                 "dbo.PostTypes",
@@ -131,29 +152,36 @@ namespace DB.Migrations
         {
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
             DropForeignKey("dbo.Posts", "PostType_Id", "dbo.PostTypes");
+            DropForeignKey("dbo.Messages", "Post_Id", "dbo.Posts");
             DropForeignKey("dbo.Posts", "Location_Id", "dbo.Locations");
             DropForeignKey("dbo.Posts", "LastModifiedBy_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.Posts", "Author_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Messages", "SendTo_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Messages", "CreatedBy_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
+            DropIndex("dbo.Posts", new[] { "PostType_Id" });
+            DropIndex("dbo.Posts", new[] { "Location_Id" });
+            DropIndex("dbo.Posts", new[] { "LastModifiedBy_Id" });
+            DropIndex("dbo.Posts", new[] { "Author_Id" });
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
-            DropIndex("dbo.Posts", new[] { "PostType_Id" });
-            DropIndex("dbo.Posts", new[] { "Location_Id" });
-            DropIndex("dbo.Posts", new[] { "LastModifiedBy_Id" });
-            DropIndex("dbo.Posts", new[] { "Author_Id" });
+            DropIndex("dbo.Messages", new[] { "Post_Id" });
+            DropIndex("dbo.Messages", new[] { "SendTo_Id" });
+            DropIndex("dbo.Messages", new[] { "CreatedBy_Id" });
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.PostTypes");
+            DropTable("dbo.Posts");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
-            DropTable("dbo.Posts");
+            DropTable("dbo.Messages");
             DropTable("dbo.Locations");
         }
     }

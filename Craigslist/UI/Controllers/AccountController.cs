@@ -1,14 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using DB.Database;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Models;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 
 namespace UI.Controllers
@@ -80,7 +78,13 @@ namespace UI.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    {
+                        string role = UserRoles.GetUserRole(model.Email);
+                        if (role == "Admin")
+                            return RedirectToAction("Index", "Admin");
+
+                        return RedirectToAction("Index","Posts");
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -152,19 +156,30 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
+         
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    if (UserManagement.IsFirstUser())
+                    {
+                        await UserManager.AddToRoleAsync(user.Id, "Admin");
+                    }
+                    else
+                    {
+                        await UserManager.AddToRoleAsync(user.Id, "User");
+                    }
+
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
-                    return RedirectToAction("Index", "Home");
+                    LogOff();
+                    return RedirectToAction("Login", "Account");
                 }
                 AddErrors(result);
             }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Data.Models.Data;
 using Models;
-
 namespace BizLogic.Logic
 {
     public static class PostActions
@@ -22,16 +22,16 @@ namespace BizLogic.Logic
                 && hasLocation && hasPostType;
         }
 
-        public static bool CanDeletePost(ApplicationUser user, Post post)
+        public static bool CanDeletePost(string userId, Post post)
         {
-            var isPostOwner = post.Author.Equals(user);
+            var isPostOwner = post.Author.Id.Equals(userId);
 
             return isPostOwner;
         }
 
         public static bool CanUpdatePost(ApplicationUser user, Post post)
         {
-            var isOwner = post.Author.Equals(user);
+            var isOwner = post.Author.Id.Equals(user.Id);
             var isPostExpiredOrDeleted = post.Deleted
                 || (post.ExpirationDate.HasValue && post.ExpirationDate < DateTime.Now);
 
@@ -51,13 +51,13 @@ namespace BizLogic.Logic
             if (!string.IsNullOrEmpty(area) || !string.IsNullOrEmpty(locale))
                 filteredPosts = from post in filteredPosts
                     where (string.IsNullOrEmpty(area) || post.Location.Area.ToLower().Equals(area.ToLower()))
-                        && (string.IsNullOrEmpty(locale) || post.Location.Locale.ToLower().Equals(locale.ToLower()))
+                          && (string.IsNullOrEmpty(locale) || post.Location.Locale.ToLower().Equals(locale.ToLower()))
                     select post;
 
             if (!string.IsNullOrEmpty(category) || !string.IsNullOrEmpty(subCategory))
                 filteredPosts = from post in filteredPosts
                     where (string.IsNullOrEmpty(category) || post.PostType.Category.ToLower().Equals(category.ToLower()))
-                        && (string.IsNullOrEmpty(subCategory) || post.PostType.SubCategory.ToLower().Equals(subCategory.ToLower()))
+                          && (string.IsNullOrEmpty(subCategory) || post.PostType.SubCategory.ToLower().Equals(subCategory.ToLower()))
                     select post;
 
             if (!string.IsNullOrEmpty(query))

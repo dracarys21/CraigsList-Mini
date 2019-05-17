@@ -1,0 +1,116 @@
+﻿@model Data.Models.PostViewModel
+
+@{
+    ViewBag.Title = "Create a Post";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm("Create", "Posts", FormMethod.Get, new { id = "create" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Post</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Body, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Body, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Body, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Areas, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Area,
+                    Model.Areas,
+                    new
+                    {
+                        @class = "form-control",
+                        @id = "area",
+                        @onchange = "javascript:postArea(this.value);"
+                    })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Locales, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Locale,
+                    Model.Locales,
+                    new
+                    {
+                        @class = "form-control",
+                        @id = "locale",
+                        @onchange = "document.getElementById('create').submit();"
+                    })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Categories, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Category,
+                    Model.Categories,
+                    new
+                    {
+                        @class = "form-control",
+                        @id = "category",
+                        @onchange = "javascript:postCategory(this.value);"
+                    })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SubCategories, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Subcategory,
+                    Model.SubCategories,
+                    new
+                    {
+                        @class = "form-control",
+                        @id = "subcategory",
+                        @onchange = "document.getElementById('create').submit();"
+                    })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script language="javascript" type="text/javascript">
+        function postArea(area) {
+            $('#locale').val('Please Select a Locale');
+            document.getElementById('create').submit();
+        }
+
+        function postCategory(category) {
+            $('#subcategory').val('Please Select a Subcategory');
+            document.getElementById('create').submit();
+        }
+    </script>
+}
