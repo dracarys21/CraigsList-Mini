@@ -45,8 +45,10 @@
                         <div>
                             @foreach (var loc in Model.Locales)
                             {
+                                var btnStyle = loc.Equals(Model.Locale) ? "badge badge-info active" : "badge badge-info";
+
                                 <div style="display:inline-block;">
-                                    <a href="javascript:;" class="badge bg-light text-primary border border-primary"
+                                    <a href="javascript:;" class="@btnStyle"
                                        style="height: 100%;"
                                        onclick="setLocale('@loc')">
                                         @loc
