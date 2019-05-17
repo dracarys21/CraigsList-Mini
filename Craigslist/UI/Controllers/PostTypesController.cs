@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Net;
 using System.Web.Mvc;
 using DB.Database;
 using Data.Models.Data;
-using Microsoft.AspNet.Identity;
 using System.Text;
+using Microsoft.AspNet.Identity;
 
 namespace UI.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PostTypesController : Controller
     { 
 
@@ -22,23 +17,21 @@ namespace UI.Controllers
             return View(PostTypesOps.GetDistinctPostTypes());
         }
 
-
         public ActionResult ListSubCategories(string category)
         {
-            return View(PostTypesOps.GetPostTypesByCategory(category));
+            return View(PostTypesOps.GetSubCategoriesByCategory(category));
         }
         // GET: PostTypes/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+
+            PostType postType = PostTypesOps.GetPostTypeById(id.Value);
+
             if (postType == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(postType);
         }
 
@@ -53,11 +46,12 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Category,SubCategory,Slug")] PostType postType)
+        public ActionResult Create([Bind(Include = "Category,SubCategory,Slug")] PostType postType)
         {
             if (ModelState.IsValid)
             {
                 PostTypesOps.CreatePostTypes(postType.Category, postType.SubCategory, postType.Slug);
+
                 return RedirectToAction("Index");
             }
 
@@ -67,15 +61,14 @@ namespace UI.Controllers
         // GET: PostTypes/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+
+            PostType postType = PostTypesOps.GetPostTypeById(id.Value);
+
             if (postType == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(postType);
         }
 
@@ -84,13 +77,17 @@ namespace UI.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Category,SubCategory,Slug")] PostType postType)
+        public ActionResult Edit(int id, [Bind(Include = "Category,SubCategory,Slug,Active")] PostType postType)
         {
             if (ModelState.IsValid)
             {
-                string userid = User.Identity.GetUserId();
-                PostTypesOps.UpdatePostTypes(UserRoles.GetUserById(userid), postType, out StringBuilder errors);
-                return RedirectToAction("ListSubCategories", new {category =  postType.Category});
+                postType.Id = id;
+                PostTypesOps.UpdatePostType(postType, out StringBuilder errors);
+
+                if (errors.Length > 0)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
+
+                return RedirectToAction("Index");
             }
             return View(postType);
         }
@@ -98,15 +95,14 @@ namespace UI.Controllers
         // GET: PostTypes/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
+            if (!id.HasValue)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            PostType postType = PostTypesOps.GetPostTypesById(id);
+
+            PostType postType = PostTypesOps.GetPostTypeById(id.Value);
+
             if (postType == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(postType);
         }
 
@@ -115,8 +111,10 @@ namespace UI.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            string userid = User.Identity.GetUserId();
-            PostTypesOps.DeletePostTypeById(UserRoles.GetUserById(userid), id, out StringBuilder error);
+            PostTypesOps.DeletePostTypeById(id, out StringBuilder errors);
+
+            if (errors.Length > 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, errors.ToString());
 
             return RedirectToAction("Index");
         }
@@ -128,7 +126,7 @@ namespace UI.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PostType postType = PostTypesOps.GetPostTypesByCategory(category).FirstOrDefault();
+            PostType postType = PostTypesOps.GetSubCategoriesByCategory(category)[0];
             if (postType == null)
             {
                 return HttpNotFound();
@@ -138,7 +136,7 @@ namespace UI.Controllers
             return View(v);
         }
 
-        // POST: Locations/Delete/5
+
         [HttpPost, ActionName("DeleteCategory")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteCategoryConfirmed(string category)

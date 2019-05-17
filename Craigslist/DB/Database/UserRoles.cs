@@ -72,7 +72,6 @@ namespace DB.Database
             {
                 using (var db = new ApplicationDbContext())
                 {
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(db));
                     var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(db));
 
                     ApplicationUser user = db.Users.FirstOrDefault(x => x.UserName == userName);

@@ -175,6 +175,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PostsController.cs" />
     <Compile Include="Controllers\PostTypesController.cs" />
+    <Compile Include="Controllers\PostFilterController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -182,9 +183,9 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\aspnet-DeleteThis-20190422122225.mdf" />
-    <Content Include="App_Data\aspnet-DeleteThis-20190422122225_log.ldf">
-      <DependentUpon>aspnet-DeleteThis-20190422122225.mdf</DependentUpon>
+    <Content Include="App_Data\aspnet-localdb.mdf" />
+    <Content Include="App_Data\aspnet-localdb_log.ldf">
+      <DependentUpon>aspnet-localdb.mdf</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -262,6 +263,7 @@
     <Content Include="Views\Admin\ChangeUserToAdmin.cshtml" />
     <Content Include="Views\Locations\DeleteArea.cshtml" />
     <Content Include="Views\PostTypes\DeleteCategory.cshtml" />
+    <Content Include="Views\PostFilter\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
