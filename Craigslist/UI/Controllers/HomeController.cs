@@ -13,26 +13,6 @@ namespace UI.Controllers
         public ActionResult Index(string area = "New York", string locale = "",
             string category = "", string subcategory = "")
         {
-
-//            var categories = PostTypesOps.GetDistinctCategories().ToList();
-//            var subcategories = new List<string>();
-//            if (!string.IsNullOrEmpty(category))
-//                subcategories = PostTypesOps.GetSubCategoriesByCategory(category)
-//                    .Select(c => c.SubCategory).ToList();
-
-//            var activeLocs = LocationOps.GetActiveLocationsList();
-//            var model = new HomePageViewModel(activeLocs, activeCategories);
-
-//            if (Request.Cookies["CurrentLocation"] != null && activeLocs.Count != 0)
-//                 model.CurrentLocation = Request.Cookies["CurrentLocation"].Value;
-
-//            HttpCookie cookie = new HttpCookie("CurrentLocation")
-//            {
-//                Value = model.CurrentLocation
-//            };
-//
-//            ControllerContext.HttpContext.Response.Cookies.Add(cookie);
-
             if (!string.IsNullOrEmpty(category) || !string.IsNullOrEmpty(subcategory))
                 return RedirectToAction("Index", "PostFilter",
                     new {area, locale, category, subcategory});
@@ -55,35 +35,16 @@ namespace UI.Controllers
             {
                 Area = area,
                 Areas = areas,
-                Locales = locales
+                Locales = locales,
+                Locale = locale
             });
         }
 
-//        // Get: /{location}/{posttype}
-//        [HttpPost]
-//        public ActionResult FilterPosts(string area = "", string locale = "",
-//            string category = "", string subcategory = "")
-//        {
-//            return RedirectToAction("Index", "PostFilter", 
-//                new { area, locale, category, subcategory });
-//        }
-
-//        [HttpGet]
-//        public ActionResult SetArea(string area)
-//        {
-//            var areas = LocationOps.GetDistinctAreas().ToList();
-//            var activeCategories = PostTypesOps.GetActivePostTypesList();
-//            var locales = new List<string>();
-//
-//            if (!string.IsNullOrEmpty(area))
-//                locales = LocationOps.GetLocalesByArea(area)
-//                    .Select(l => l.Locale).ToList();
-//
-//            return View("Index", new HomePageViewModel(areas, activeCategories)
-//            {
-//                Areas = new SelectList(areas.Select(a => a.Area), "New York"),
-//                Locales = locales
-//            });
-//        }
+        public ActionResult CreatePost(string area = "New York", string locale = "",
+            string category = "", string subcategory = "")
+        {
+            return RedirectToAction("Create", "Posts", 
+                new { area, locale, category, subcategory });
+        }
     }
 }

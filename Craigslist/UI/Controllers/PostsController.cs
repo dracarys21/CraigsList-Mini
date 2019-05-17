@@ -53,7 +53,8 @@ namespace UI.Controllers
 
         // GET: Posts/Create
         [Authorize]
-        public ActionResult Create()
+        public ActionResult Create(string area = "", string locale = "",
+            string category = "", string subcategory = "")
         {
             var locations = LocationOps.GetActiveLocationsList();
             var postTypes = PostTypesOps.GetActivePostTypesList();
@@ -78,12 +79,33 @@ namespace UI.Controllers
                 .Select(l => l.Key)
                 .ToList());
 
+            var subcategories = new List<string> { "Please Select a Category" };
+            var locales = new List<string> { "Please Select a Locale" };
+
+            if (string.IsNullOrEmpty(category) && !string.IsNullOrEmpty(subcategory))
+                category = PostTypesOps.GetCategoryBySubcategoryName(subcategory);
+            
+            if (string.IsNullOrEmpty(area) && !string.IsNullOrEmpty(locale))
+                area = LocationOps.GetAreaByLocale(locale);
+
+            if (!string.IsNullOrEmpty(category))
+                subcategories.AddRange(PostTypesOps.GetSubCategoriesByCategory(category)
+                    .Select(s => s.SubCategory)
+                    .OrderBy(l => l)
+                    .ToList());
+            
+            if (!string.IsNullOrEmpty(area))
+                locales.AddRange(LocationOps.GetLocalesByArea(area)
+                    .Select(l => l.Locale)
+                    .OrderBy(l => l)
+                    .ToList());
+
             return View(new PostViewModel
             {
-                Areas = new SelectList(areas, "Please Select an Area"),
-                Locales = null,
-                Categories = new SelectList(categories, "Please Select a Category"),
-                SubCategories = null
+                Areas = new SelectList(areas, string.IsNullOrEmpty(area) ? "Please Select an Area" : area),
+                Locales = new SelectList(locales, string.IsNullOrEmpty(locale) ? "Please Select a Locale" : locale),
+                Categories = new SelectList(categories,  string.IsNullOrEmpty(category) ? "Please Select a Category" : category),
+                SubCategories = new SelectList(subcategories,  string.IsNullOrEmpty(subcategory) ? "Please Select a Subcategory" : subcategory)
             });
         }
 

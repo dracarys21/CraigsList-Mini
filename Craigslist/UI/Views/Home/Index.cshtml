@@ -8,61 +8,61 @@
 
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-2 border border-info" style="background-color: gainsboro;">
-            <h3>
-                Contact
-            </h3>
-            <address>
-                One Microsoft Way<br />
-                Redmond, WA 98052-6399<br />
-                <abbr title="Phone">P:</abbr>
-                425.555.0100
-            </address>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { id = "home" }))
+    {
+        <div class="row">
+            <div class="col-sm-2 border border-info" style="background-color: gainsboro;">
+                <h3>
+                    Contact
+                </h3>
+                <address>
+                    One Microsoft Way<br />
+                    Redmond, WA 98052-6399<br />
+                    <abbr title="Phone">P:</abbr>
+                    425.555.0100
+                </address>
 
-            <address>
-                <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-                <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-            </address>
+                <address>
+                    <strong>Support:</strong> <a href="mailto:Support@example.com">Support@example.com</a><br />
+                    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
+                </address>
 
-            <hr />
-            <h3>About</h3>
-            <p>
-                Craigslist is an American classified advertisements website with sections devoted to jobs, housing, services etc.
-            </p>
+                <hr />
+                <h3>About</h3>
+                <p>
+                    Craigslist is an American classified advertisements website with sections devoted to jobs, housing, services etc.
+                </p>
 
-        </div>
+            </div>
 
-        <div class="col-sm-8">
-            <div class="row">
-                <div class="container col-sm-10 border border-info" style="background-color: gainsboro; padding-left:2%; padding-right:2%;">
-                    <div class="col-sm-3">
-                        <h3 class="text-primary" style="font-style: initial">
-                            @Html.DisplayFor(model => model.Area)
-                        </h3>
-                    </div>
-                    <div class="col-sm-9" style="padding-top:3%;">
-                        <div>
-                            @foreach (var loc in Model.Locales)
-                            {
-                                var btnStyle = loc.Equals(Model.Locale) ? "badge badge-info active" : "badge badge-info";
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="container col-sm-10 border border-info" style="background-color: gainsboro; padding-left: 2%; padding-right: 2%;">
+                        <div class="col-sm-3">
+                            <h3 class="text-primary" style="font-style: initial">
+                                @Html.DisplayFor(model => model.Area)
+                            </h3>
+                        </div>
+                        <div class="col-sm-9" style="padding-top: 3%;">
+                            <div>
+                                @foreach (var loc in Model.Locales)
+                                {
+                                    var btnStyle = "btn btn-primary badge";
 
-                                <div style="display:inline-block;">
-                                    <a href="javascript:;" class="@btnStyle"
-                                       style="height: 100%;"
-                                       onclick="setLocale('@loc')">
-                                        @loc
-                                    </a>
-                                </div>
-                            }
+                                    if (loc.ToLower().Equals(Model.Locale.ToLower()))
+                                    {
+                                        btnStyle = btnStyle + " active";
+                                    }
+                                    <div style="display: inline-block;">
+                                        <button type="submit" class="@btnStyle" onclick="javascript:setLocale('@loc');">@loc</button>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row" style="margin-left: 20px; margin-right: 20px;">
-                @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { id = "home" }))
-                {
-                    foreach (KeyValuePair<string, List<PostType>> keyValuePair in Model.AllCategories)
+                <div class="row" style="margin-left: 20px; margin-right: 20px;">
+                    @foreach (KeyValuePair<string, List<PostType>> keyValuePair in Model.AllCategories)
                     {
                         <div class="col-sm-4">
                             <div class="card border-info mb-3" style="max-width: 18rem; margin: 10px; height: 200px; background-color: lightgray;">
@@ -89,45 +89,50 @@
                     @Html.HiddenFor(m => m.Locale, new { id = "locale" })
                     @Html.HiddenFor(m => m.Category, new { id = "category" })
                     @Html.HiddenFor(m => m.Subcategory, new { id = "subcategory" })
-                }
-            </div>
-        </div>
 
-        <div class="col-sm-2 border border-info" style="background-color: gainsboro; padding: 10px">
-
-            <div class="pb-3">
-                @Html.ActionLink("Create Post", "Create", "Posts", null, new {@class = "btn btn-primary"})
+                </div>
             </div>
 
-            <div class="accordion" id="accordionExample">
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                        <h6>
-                            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align: center; height: 20px; padding-top: 1%;">
-                                All Locations
-                            </button>
-                        </h6>
-                    </div>
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                        <div class="card-body">
-                            <div style="display: block;">
+            <div class="col-sm-2 border border-info" style="background-color: gainsboro; padding: 10px">
 
-                                @foreach (var area in Model.Areas)
-                                {
-                                    <div class="container">
-                                        <a href="@Url.Action("Index", new {area})" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
-                                            @area
-                                        </a>
-                                    </div>
-                                }
+                <div class="pb-3">
+                    @Html.ActionLink("Create Post",
+                        "CreatePost",
+                        "Home",
+                        new { @Model.Area, @Model.Locale },
+                        new {@class = "btn btn-primary"})
+                </div>
+
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h6>
+                                <button class="btn" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-align: center; height: 20px; padding-top: 1%;">
+                                    All Locations
+                                </button>
+                            </h6>
+                        </div>
+                        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <div style="display: block;">
+
+                                    @foreach (var area in Model.Areas)
+                                    {
+                                        <div class="container">
+                                            <a href="@Url.Action("Index", new {area})" class="badge bg-light text-info border border-info" style="height: 100%; margin: 3px;">
+                                                @area
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+        </div>
+    }
 </div>
 
 @section Scripts {
@@ -136,6 +141,7 @@
     <script language="javascript" type="text/javascript">
         function setLocale(loc) {
             $('#locale').val(loc);
+            document.getElementById('home').submit();
         }
 
         function setCategory(category) {
@@ -146,6 +152,14 @@
         function setSubcategory(subcategory) {
             $('#subcategory').val(subcategory);
             document.getElementById('home').submit();
+        }
+
+        function getArea() {
+            return $('#area').val;
+        }
+
+        function getLocale() {
+            return $('#locale').val;
         }
     </script>
 }
