@@ -151,6 +151,11 @@ namespace UI.Controllers
 
             if (post == null)
                 return HttpNotFound();
+
+            if ((post.ExpirationDate.HasValue && post.ExpirationDate.Value.CompareTo(DateTime.Today) < 0) || post.Deleted)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             
             return View(post);
         }
@@ -163,6 +168,13 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
+                var postDb = UserPost.GetPostById(id);
+
+                if ((postDb.ExpirationDate.HasValue && postDb.ExpirationDate.Value.CompareTo(DateTime.Today) < 0) || postDb.Deleted)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
                 UserPost.UpdatePost(User.Identity.GetUserId(), id, post.Title, post.Body, out var errors);
 
                 if (errors.Length > 0)

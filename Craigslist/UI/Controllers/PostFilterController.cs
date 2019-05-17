@@ -168,13 +168,6 @@ namespace UI.Controllers
 
             if (pageNo > ViewBag.PageCount)
                 pageNo = ViewBag.PageCount;
-//
-//            var spread = ViewBag.PageCount / pageSize;
-//
-//            ViewBag.RightPageIndex = Convert.ToInt32(Math.Min(spread, ViewBag.PageCount));
-//            ViewBag.LeftPageIndex = ViewBag.RightPageIndex - pageSize;
-//            ViewBag.VisibleRightIndex = Convert.ToInt32(Math.Min(ViewBag.RightPageIndex, ViewBag.PageCount));
-//            ViewBag.VisibleLeftPageIndex = Convert.ToInt32(Math.Max(ViewBag.LeftPageIndex, 1));
 
             ViewBag.CurrentPage = pageNo;
 
