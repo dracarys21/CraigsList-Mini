@@ -70,7 +70,7 @@ namespace DB.Database
                         where post.Author.Id.Equals(userId)
                               && !post.Deleted
                         select post;
-
+                    
                     return posts.ToList();
                 }
             }
@@ -123,7 +123,7 @@ namespace DB.Database
                 using (var db = new ApplicationDbContext())
                 {
                     var post = db.Posts
-                        .Include("Author")
+                        .Include("Author").Include("Messages")
                         .FirstOrDefault(p => p.Id.Equals(postId)
                                              && !p.Deleted);
 

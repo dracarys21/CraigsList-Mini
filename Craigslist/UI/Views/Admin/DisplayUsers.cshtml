@@ -26,8 +26,15 @@
             @Html.DisplayFor(modelItem => item.UserName)
         </td>
         <td>
-            @Html.ActionLink("User Posts","UserPosts", new {  username =item.UserName  }) |
-            @Html.ActionLink("Change User To Admin", "ChangeUserToAdmin", new {username = item.UserName })
+            @Html.ActionLink("User Posts", "UserPosts", new { username = item.UserName }) |
+            @if (item.IsAdmin)
+            {
+                <label>Admin</label>
+            }
+            else
+            {
+                @Html.ActionLink("Change User To Admin", "ChangeUserToAdmin", new { username = item.UserName })
+            }
         </td>
     </tr>
 }

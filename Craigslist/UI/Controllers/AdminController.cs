@@ -12,7 +12,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using DB.Database;
-
+using System.Web.Security;
 namespace UI.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -25,7 +25,9 @@ namespace UI.Controllers
         }
         public ActionResult DisplayUsers()
         {
-            return View(UserRoles.GetUsers());
+            var users = UserRoles.GetUsers();
+           users.Remove(users.Single(s => s.UserId == User.Identity.GetUserId()));
+            return View(users);
         }
 
         public ActionResult UserPosts(string username)
@@ -72,7 +74,7 @@ namespace UI.Controllers
             u.Email = user.Email;
             u.UserName = user.UserName;
             u.UserId = user.Id;
-
+           
             if (UserRoles.ChangeUserRole(username))
                 return RedirectToAction("Index");
             ModelState.AddModelError("","User Name Does not exists");

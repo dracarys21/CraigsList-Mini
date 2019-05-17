@@ -20,7 +20,7 @@ namespace BizLogic.Logic
 
         public static bool CanUpdateMessageDatabase(Message message, ApplicationUser user,  Post post)
         {
-            return message!=null && message.SendTo.Equals(user) && message.SendTo.Equals(post.Author);
+            return message!=null && message.SendTo.Id.Equals(user.Id) && message.SendTo.Id.Equals(post.Author.Id);
         }
     }
 }

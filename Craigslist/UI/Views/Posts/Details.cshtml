@@ -62,5 +62,6 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "Index") | 
+    @Html.ActionLink("Respond", "CreateMessage", "Message", new { postId = Model.Id },null)
 </p>
