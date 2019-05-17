@@ -40,7 +40,7 @@ namespace UI.Controllers
             });
         }
 
-        public ActionResult CreatePost(string area = "New York", string locale = "",
+        public ActionResult CreatePost(string area = "", string locale = "",
             string category = "", string subcategory = "")
         {
             return RedirectToAction("Create", "Posts", 
