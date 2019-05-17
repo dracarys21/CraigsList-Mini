@@ -147,7 +147,13 @@ namespace UI.Controllers
         {
             string userid = User.Identity.GetUserId();
             LocationOps.DeleteLocationByArea(area, out StringBuilder error);
+            if (Request.Cookies["CurrentLocation"] != null && Request.Cookies["CurrentLocation"].Value == area)
+             {
+                Response.Cookies["CurrentLocation"].Value = LocationOps.GetDistinctLocation().FirstOrDefault().Area;
+             }
             return RedirectToAction("Index");
+
         }
+
     }
 }
