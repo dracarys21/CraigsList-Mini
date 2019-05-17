@@ -9,6 +9,8 @@ namespace Data.Models
 {
     public class MessageViewModel
     {
+        public string Sender { get; set; }
+        public string Receiver { get; set; }
         public string MessageBody { get; set; }
         public  int postId { get; set; }
     }

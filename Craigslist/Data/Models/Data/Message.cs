@@ -23,8 +23,11 @@ namespace Data.Models.Data
         public ApplicationUser SendTo { get; set; }
         public DateTime CreateDate { get; set; }
         [Required]
+        [Display(Name ="Sender")]
         public ApplicationUser CreatedBy { get; set; }
         public bool Deleted { get; set; }
         public bool Read { get; set; }
+        [Display(Name ="PostId")]
+        public int postId { get; set; }
     }
 }

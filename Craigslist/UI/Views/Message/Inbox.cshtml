@@ -6,11 +6,11 @@
 
 <h2>Inbox</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table">
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.postId)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.Body)
         </th>
@@ -20,12 +20,16 @@
         <th>
             @Html.DisplayNameFor(model => model.CreateDate)
         </th>
-        
+
         <th></th>
+
     </tr>
 
 @foreach (var item in Model) {
     <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.postId)
+        </td>
         <td>
             @Html.DisplayFor(modelItem => item.Body)
         </td>
@@ -34,6 +38,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.CreateDate)
+        </td>
+        <td>
+            @Html.ActionLink("Delete Message", "Delete", new { id = item.Id})
         </td>
     </tr>
 }

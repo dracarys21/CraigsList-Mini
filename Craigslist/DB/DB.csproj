@@ -105,6 +105,15 @@
     <Compile Include="Database\UserManagement.cs" />
     <Compile Include="Database\UserPost.cs" />
     <Compile Include="Database\UserRoles.cs" />
+    <Compile Include="Migrations\201905162109311_InitialCreate.cs" />
+    <Compile Include="Migrations\201905162109311_InitialCreate.Designer.cs">
+      <DependentUpon>201905162109311_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905162155591_Update in MessageModel.cs" />
+    <Compile Include="Migrations\201905162155591_Update in MessageModel.Designer.cs">
+      <DependentUpon>201905162155591_Update in MessageModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -136,7 +145,12 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations\" />
+    <EmbeddedResource Include="Migrations\201905162109311_InitialCreate.resx">
+      <DependentUpon>201905162109311_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905162155591_Update in MessageModel.resx">
+      <DependentUpon>201905162155591_Update in MessageModel.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -7,6 +7,8 @@ using Models;
 using System.Data;
 using BizLogic.Logic;
 using System.Data.Entity;
+using Data.Models;
+using System.Data.Entity.Migrations;
 
 namespace DB.Database
 {
@@ -28,9 +30,11 @@ namespace DB.Database
                     var message = new Message
                     {
                         Body = userMessage,
-                        SendTo = receiver ,
+                        SendTo = receiver,
                         CreatedBy = author,
                         CreateDate = DateTime.Now,
+                        postId = postId,
+                        Deleted = false
                     };
                     
                     post.Messages.Add(message);
@@ -59,10 +63,9 @@ namespace DB.Database
                                             select user).FirstOrDefault();
 
                     var messages = from message in db.Messages
-                        where message.SendTo.Id.Equals(receiver.Id)
+                                   where message.SendTo.Id.Equals(receiver.Id) && message.Deleted == false
                         orderby message.CreateDate descending
                         select message;
-
                     return messages.ToList();
                 }
             }
@@ -81,9 +84,9 @@ namespace DB.Database
                 {
                     var messages = from p in db.Posts
                         where p.Id.Equals(postId)
-                        select p.Messages;
+                         select p.Messages;
 
-                    return messages.FirstOrDefault().OrderByDescending(i => i.CreateDate).ToList();
+                    return messages.FirstOrDefault().OrderByDescending(i => i.CreateDate).Where(m => m.Deleted==false).ToList();
                        
                 }
             }
@@ -94,17 +97,46 @@ namespace DB.Database
             }
         } 
 
-        public static void DeleteResponse(Message message, ApplicationUser user, Post post, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        public static Message GetMessageById(int id)
         {
             try
             {
-                errors = new StringBuilder();
-                if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
+                using (var db = new ApplicationDbContext())
                 {
-                    errors.Append("Post ");
-                    return;
+                    var message = db.Messages.Include("CreatedBy").Include("SendTo")
+                        .FirstOrDefault(p => p.Id.Equals(id)
+                                             && !p.Deleted);
+                    return message;
                 }
-                message.Deleted = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public static void DeleteResponse(int messageId,string userId, out StringBuilder errors)//Can be used for deleting a response or marking a response as read.
+        {
+            try
+            {
+                using (var db = new ApplicationDbContext())
+                {
+                    errors = new StringBuilder();
+                    Message message = GetMessageById(messageId);
+                    ApplicationUser user = UserRoles.GetUserById(userId);
+                    Post post = UserPost.GetPostById(message.postId);
+
+                    if (!MessageAction.CanUpdateMessageDatabase(message, user, post))
+                    {
+                        errors.Append("Can't delete Message");
+                        return;
+                    }
+                    message.Deleted = true;
+                    db.Messages.AddOrUpdate(message);
+                    db.SaveChanges();
+                } 
+                
             }
             catch(Exception e)
             {

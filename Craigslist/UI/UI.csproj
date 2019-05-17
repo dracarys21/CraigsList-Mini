@@ -267,6 +267,7 @@
     <Content Include="Views\PostFilter\Index.cshtml" />
     <Content Include="Views\Message\CreateMessage.cshtml" />
     <Content Include="Views\Message\Inbox.cshtml" />
+    <Content Include="Views\Message\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
